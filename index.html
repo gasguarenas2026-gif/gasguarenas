@@ -4,11 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0d6efd" />
-<title>GasGuarenas</title>
+<title>Gas Guarenas Comunal</title>
 <link rel="manifest" href="./manifest.json" />
-<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2933/2933933.png" />
+<link rel="apple-touch-icon" href="./icon-192.png" />
+<link rel="icon" type="image/png" href="./icon-192.png" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="GasGuarenas" />
 <script src="./config.js"></script>
 <style>
   :root{--primary:#0d6efd;--primary-dark:#0a58ca;--primary-light:#4dabf7;--accent:#00d4ff;--bg:#0a1929;--bg-card:#132f4c;--text:#e7f1ff;--text-muted:#8fa8c8;--danger:#ff4d4f;--success:#52c41a;--radius:14px;--shadow:0 8px 24px rgba(0,0,0,.35);}
@@ -86,6 +88,17 @@
   .map-box{width:100%;height:150px;border-radius:10px;margin-top:8px;background:#0d2138;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:12px;text-align:center;padding:10px;}
   .thumb-preview{width:100%;max-height:200px;object-fit:contain;border-radius:8px;margin-top:8px;background:#000;}
   .gps-ok{color:var(--success);font-size:12px;margin-top:6px;}
+
+  /* Banner de instalación */
+  .install-banner{position:fixed;bottom:100px;left:16px;right:16px;background:linear-gradient(135deg,#1e4a7a,#153a5c);border:1px solid rgba(77,171,247,.4);border-radius:14px;padding:14px;display:none;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:500;animation:bannerSlide .4s cubic-bezier(.2,.7,.3,1.2);}
+  .install-banner.active{display:flex;}
+  @keyframes bannerSlide{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+  .install-banner img{width:48px;height:48px;border-radius:12px;flex-shrink:0;}
+  .install-banner .txt{flex:1;}
+  .install-banner .txt b{display:block;font-size:14px;margin-bottom:2px;}
+  .install-banner .txt small{color:var(--text-muted);font-size:11px;}
+  .install-banner button{width:auto;margin:0;padding:8px 14px;font-size:13px;box-shadow:none;}
+  .install-banner .close-btn{background:transparent;border:none;color:var(--text-muted);font-size:20px;padding:4px;width:auto;box-shadow:none;margin:0;}
 </style>
 </head>
 <body>
@@ -194,12 +207,23 @@
   </div>
 </div>
 
+<!-- Banner de instalación PWA -->
+<div class="install-banner" id="install-banner">
+  <img src="./icon-192.png" alt="GasGuarenas" />
+  <div class="txt">
+    <b>Instalar GasGuarenas</b>
+    <small id="install-msg">Toca para instalar la app en tu teléfono</small>
+  </div>
+  <button class="success" id="btn-install">Instalar</button>
+  <button class="close-btn" id="btn-close-install">✕</button>
+</div>
+
 <div id="toast-container"></div>
 <div class="modal-overlay" id="modal"><div class="modal" id="modal-content"></div></div>
 
 <script type="module">
 /* ============================================================
-   GasGuarenas v2.0 · App principal
+   GasGuarenas v2.1 · App principal
    PocketBase SDK 0.26.2
    ============================================================ */
 import PocketBase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/dist/pocketbase.es.mjs';
@@ -1040,6 +1064,86 @@ function modalSubirGaleria() {
     }
   };
 }
+
+/* ============================================================
+   INSTALACIÓN PWA
+   ============================================================ */
+let deferredPrompt = null;
+const installBanner = $('#install-banner');
+const installMsg = $('#install-msg');
+const btnInstall = $('#btn-install');
+const btnCloseInstall = $('#btn-close-install');
+
+function yaEstaInstalada() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true;
+}
+function esIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+function mostrarBannerInstalacion() {
+  if (yaEstaInstalada()) return;
+  if (localStorage.getItem('install-banner-cerrado') === '1') return;
+
+  if (esIOS()) {
+    installMsg.textContent = 'Toca "Compartir" → "Añadir a pantalla de inicio"';
+    btnInstall.textContent = '¿Cómo?';
+    btnInstall.onclick = () => {
+      openModal(`
+        <h3>📲 Instalar en iPhone</h3>
+        <ol style="line-height:1.8; padding-left:20px;">
+          <li>Toca el botón <b>Compartir</b> (cuadrado con flecha hacia arriba) en Safari.</li>
+          <li>Desliza y toca <b>"Añadir a pantalla de inicio"</b>.</li>
+          <li>Confirma el nombre: <b>GasGuarenas</b>.</li>
+          <li>Toca <b>Añadir</b>.</li>
+        </ol>
+        <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cerrar</button>
+      `);
+    };
+    installBanner.classList.add('active');
+    return;
+  }
+
+  if (deferredPrompt) {
+    installMsg.textContent = 'Toca para instalar la app en tu teléfono';
+    btnInstall.textContent = 'Instalar';
+    btnInstall.onclick = async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log('Install outcome:', outcome);
+      deferredPrompt = null;
+      installBanner.classList.remove('active');
+    };
+    installBanner.classList.add('active');
+  }
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setTimeout(mostrarBannerInstalacion, 1500);
+});
+
+window.addEventListener('appinstalled', () => {
+  installBanner.classList.remove('active');
+  deferredPrompt = null;
+  toast('✅ App instalada correctamente');
+});
+
+if (btnCloseInstall) {
+  btnCloseInstall.onclick = () => {
+    installBanner.classList.remove('active');
+    localStorage.setItem('install-banner-cerrado', '1');
+  };
+}
+
+setTimeout(() => {
+  if (!installBanner.classList.contains('active') && !yaEstaInstalada() && esIOS()) {
+    mostrarBannerInstalacion();
+  }
+}, 2500);
 
 /* ============================================================
    ARRANQUE

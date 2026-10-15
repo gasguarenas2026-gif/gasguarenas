@@ -11,219 +11,81 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <script src="./config.js"></script>
 <style>
-  :root {
-    --primary: #0d6efd;
-    --primary-dark: #0a58ca;
-    --primary-light: #4dabf7;
-    --accent: #00d4ff;
-    --bg: #0a1929;
-    --bg-card: #132f4c;
-    --text: #e7f1ff;
-    --text-muted: #8fa8c8;
-    --danger: #ff4d4f;
-    --success: #52c41a;
-    --radius: 14px;
-    --shadow: 0 8px 24px rgba(0,0,0,.35);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { height: 100%; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: radial-gradient(1200px 600px at 50% -10%, #133a63 0%, var(--bg) 60%);
-    color: var(--text);
-    overflow-x: hidden;
-    min-height: 100vh;
-    animation: bgShift 18s ease-in-out infinite alternate;
-  }
-  @keyframes bgShift {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 100% 100%; }
-  }
-  .screen { display: none; padding: 16px; min-height: 100vh; animation: fadeIn .45s ease; }
-  .screen.active { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
-
-  h1, h2, h3 { font-weight: 700; letter-spacing: .3px; }
-  .logo { text-align: center; margin: 20px 0 8px; }
-  .logo h1 {
-    font-size: 32px;
-    background: linear-gradient(90deg, var(--primary-light), var(--accent));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  .logo p { color: var(--text-muted); font-size: 13px; margin-top: 4px; }
-
-  .card {
-    background: var(--bg-card);
-    border-radius: var(--radius);
-    padding: 18px;
-    box-shadow: var(--shadow);
-    border: 1px solid rgba(77,171,247,.15);
-    margin-bottom: 14px;
-    animation: cardIn .5s cubic-bezier(.2,.7,.3,1.2);
-  }
-  @keyframes cardIn { from { opacity: 0; transform: scale(.96);} to { opacity: 1; transform: scale(1);} }
-
-  label { display: block; font-size: 13px; color: var(--text-muted); margin: 10px 0 6px; }
-  input, select, textarea {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(77,171,247,.25);
-    background: #0d2138;
-    color: var(--text);
-    font-size: 15px;
-    outline: none;
-    transition: border-color .2s, box-shadow .2s;
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--primary-light);
-    box-shadow: 0 0 0 3px rgba(13,110,253,.25);
-  }
-
-  button {
-    cursor: pointer;
-    border: none;
-    border-radius: 10px;
-    padding: 13px 16px;
-    font-size: 15px;
-    font-weight: 600;
-    color: #fff;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    transition: transform .15s ease, box-shadow .2s ease, filter .2s;
-    width: 100%;
-    margin-top: 10px;
-    box-shadow: 0 6px 16px rgba(13,110,253,.35);
-  }
-  button:active { transform: scale(.97); }
-  button:hover { filter: brightness(1.1); }
-  button.secondary {
-    background: linear-gradient(135deg, #1e4a7a, #153a5c);
-    box-shadow: 0 6px 16px rgba(0,0,0,.35);
-  }
-  button.danger { background: linear-gradient(135deg, #ff4d4f, #c0392b); }
-  button.success { background: linear-gradient(135deg, #52c41a, #389e0d); }
-  button.ghost {
-    background: transparent;
-    border: 1px solid rgba(77,171,247,.4);
-    color: var(--primary-light);
-    box-shadow: none;
-  }
-  .row { display: flex; gap: 10px; }
-  .row > * { flex: 1; }
-
-  .link { color: var(--primary-light); text-align: center; display: block; margin-top: 12px; font-size: 14px; cursor: pointer; text-decoration: underline; }
-
-  /* Header */
-  .topbar {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 16px; background: rgba(19,47,76,.85);
-    backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 50;
-    border-bottom: 1px solid rgba(77,171,247,.15);
-  }
-  .topbar h2 { font-size: 17px; }
-  .topbar .badge {
-    background: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 11px;
-  }
-
-  /* Galería */
-  .gallery {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-    margin-top: 10px;
-  }
-  .media-card {
-    background: var(--bg-card);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    animation: cardIn .5s ease;
-  }
-  .media-card img, .media-card video {
-    width: 100%; height: 220px; object-fit: cover; display: block; background: #000;
-  }
-  .media-card .desc { padding: 10px 12px; font-size: 13px; color: var(--text-muted); }
-
-  /* Bottom nav */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    display: flex; justify-content: space-around;
-    background: rgba(19,47,76,.95);
-    backdrop-filter: blur(10px);
-    padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
-    border-top: 1px solid rgba(77,171,247,.2);
-    z-index: 100;
-  }
-  .bottom-nav button {
-    all: unset;
-    flex: 1;
-    text-align: center;
-    padding: 8px 4px;
-    color: var(--text-muted);
-    font-size: 11px;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: color .2s, background .2s;
-  }
-  .bottom-nav button .ico { font-size: 20px; display: block; margin-bottom: 2px; }
-  .bottom-nav button.active { color: var(--accent); background: rgba(0,212,255,.08); }
-
-  .spacer { height: 90px; }
-
-  /* Chat */
-  .chat-box {
-    height: 60vh; overflow-y: auto;
-    background: #0d2138; border-radius: 12px; padding: 10px;
-    margin-bottom: 10px;
-  }
-  .msg { max-width: 80%; padding: 8px 12px; border-radius: 12px; margin: 6px 0; font-size: 14px; animation: cardIn .3s; }
-  .msg.me { background: var(--primary); margin-left: auto; }
-  .msg.other { background: #1e4a7a; }
-  .msg small { display: block; font-size: 10px; opacity: .7; margin-top: 2px; }
-
-  /* Toast */
-  .toast {
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-    background: var(--success); color: #fff; padding: 10px 18px; border-radius: 10px;
-    z-index: 999; box-shadow: var(--shadow); font-size: 14px;
-    animation: toastIn .3s ease;
-  }
-  .toast.error { background: var(--danger); }
-  @keyframes toastIn { from { opacity: 0; transform: translate(-50%, -20px);} to { opacity: 1; transform: translate(-50%, 0);} }
-
-  /* Modal */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,.7);
-    display: none; justify-content: center; align-items: center; z-index: 200; padding: 16px;
-  }
-  .modal-overlay.active { display: flex; animation: fadeIn .2s; }
-  .modal {
-    background: var(--bg-card); border-radius: var(--radius); padding: 20px;
-    max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto;
-    box-shadow: var(--shadow);
-  }
-
-  .spin {
-    display: inline-block; width: 16px; height: 16px;
-    border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
-    border-radius: 50%; animation: spin .8s linear infinite;
-    margin-right: 6px; vertical-align: middle;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .muted { color: var(--text-muted); font-size: 12px; }
-  .empty { text-align: center; color: var(--text-muted); padding: 24px; font-size: 14px; }
-
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(77,171,247,.15); }
-  th { color: var(--primary-light); font-weight: 600; }
-
-  .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; background: #1e4a7a; }
-  .pill.on { background: var(--success); }
-  .pill.off { background: #555; }
+  :root{--primary:#0d6efd;--primary-dark:#0a58ca;--primary-light:#4dabf7;--accent:#00d4ff;--bg:#0a1929;--bg-card:#132f4c;--text:#e7f1ff;--text-muted:#8fa8c8;--danger:#ff4d4f;--success:#52c41a;--radius:14px;--shadow:0 8px 24px rgba(0,0,0,.35);}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:radial-gradient(1200px 600px at 50% -10%,#133a63 0%,var(--bg) 60%);color:var(--text);overflow-x:hidden;min-height:100vh;}
+  .screen{display:none;padding:16px;min-height:100vh;animation:fadeIn .45s ease;}
+  .screen.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  h1,h2,h3{font-weight:700;letter-spacing:.3px;}
+  .logo{text-align:center;margin:20px 0 8px;}
+  .logo h1{font-size:32px;background:linear-gradient(90deg,var(--primary-light),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .logo p{color:var(--text-muted);font-size:13px;margin-top:4px;}
+  .card{background:var(--bg-card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid rgba(77,171,247,.15);margin-bottom:14px;animation:cardIn .5s cubic-bezier(.2,.7,.3,1.2);}
+  @keyframes cardIn{from{opacity:0;transform:scale(.96);}to{opacity:1;transform:scale(1);}}
+  label{display:block;font-size:13px;color:var(--text-muted);margin:10px 0 6px;}
+  input,select,textarea{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(77,171,247,.25);background:#0d2138;color:var(--text);font-size:15px;outline:none;transition:border-color .2s,box-shadow .2s;}
+  input:focus,select:focus,textarea:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(13,110,253,.25);}
+  button{cursor:pointer;border:none;border-radius:10px;padding:13px 16px;font-size:15px;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary-dark));transition:transform .15s ease,filter .2s;width:100%;margin-top:10px;box-shadow:0 6px 16px rgba(13,110,253,.35);}
+  button:active{transform:scale(.97);}
+  button:hover{filter:brightness(1.1);}
+  button.secondary{background:linear-gradient(135deg,#1e4a7a,#153a5c);box-shadow:0 6px 16px rgba(0,0,0,.35);}
+  button.danger{background:linear-gradient(135deg,#ff4d4f,#c0392b);}
+  button.success{background:linear-gradient(135deg,#52c41a,#389e0d);}
+  button.ghost{background:transparent;border:1px solid rgba(77,171,247,.4);color:var(--primary-light);box-shadow:none;}
+  button.small{padding:6px 10px;font-size:12px;width:auto;margin:0 4px 4px 0;}
+  .row{display:flex;gap:10px;}
+  .row>*{flex:1;}
+  .link{color:var(--primary-light);text-align:center;display:block;margin-top:12px;font-size:14px;cursor:pointer;text-decoration:underline;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:rgba(19,47,76,.85);backdrop-filter:blur(8px);position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(77,171,247,.15);}
+  .topbar h2{font-size:17px;}
+  .topbar .badge{background:var(--primary);padding:4px 10px;border-radius:20px;font-size:11px;}
+  .topbar-actions{display:flex;gap:8px;align-items:center;}
+  .icon-btn{background:rgba(77,171,247,.15);border:none;width:auto;padding:6px 10px;font-size:16px;border-radius:8px;margin:0;box-shadow:none;}
+  .gallery{display:grid;grid-template-columns:1fr;gap:12px;margin-top:10px;}
+  .media-card{background:var(--bg-card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+  .media-card img,.media-card video{width:100%;height:220px;object-fit:cover;display:block;background:#000;}
+  .media-card .desc{padding:10px 12px;font-size:13px;color:var(--text-muted);}
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:rgba(19,47,76,.95);backdrop-filter:blur(10px);padding:8px 4px calc(8px + env(safe-area-inset-bottom));border-top:1px solid rgba(77,171,247,.2);z-index:100;overflow-x:auto;}
+  .bottom-nav button{all:unset;flex:1;text-align:center;padding:8px 4px;color:var(--text-muted);font-size:11px;cursor:pointer;border-radius:8px;transition:color .2s,background .2s;min-width:60px;}
+  .bottom-nav button .ico{font-size:20px;display:block;margin-bottom:2px;}
+  .bottom-nav button.active{color:var(--accent);background:rgba(0,212,255,.08);}
+  .spacer{height:90px;}
+  .chat-box{height:60vh;overflow-y:auto;background:#0d2138;border-radius:12px;padding:10px;margin-bottom:10px;}
+  .msg{max-width:80%;padding:8px 12px;border-radius:12px;margin:6px 0;font-size:14px;word-wrap:break-word;}
+  .msg.me{background:var(--primary);margin-left:auto;}
+  .msg.other{background:#1e4a7a;}
+  .msg small{display:block;font-size:10px;opacity:.7;margin-top:2px;}
+  .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--success);color:#fff;padding:10px 18px;border-radius:10px;z-index:999;box-shadow:var(--shadow);font-size:14px;}
+  .toast.error{background:var(--danger);}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;justify-content:center;align-items:center;z-index:200;padding:16px;}
+  .modal-overlay.active{display:flex;animation:fadeIn .2s;}
+  .modal{background:var(--bg-card);border-radius:var(--radius);padding:20px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow);}
+  .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin-right:6px;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .muted{color:var(--text-muted);font-size:12px;}
+  .empty{text-align:center;color:var(--text-muted);padding:24px;font-size:14px;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th,td{padding:8px;text-align:left;border-bottom:1px solid rgba(77,171,247,.15);}
+  th{color:var(--primary-light);font-weight:600;}
+  .pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;background:#1e4a7a;margin:2px 4px 2px 0;}
+  .pill.on{background:var(--success);}
+  .pill.off{background:#555;}
+  .pill.warn{background:#d48806;}
+  .pass-wrap{position:relative;}
+  .pass-wrap input{padding-right:44px;}
+  .pass-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;width:32px;height:32px;padding:0;margin:0;font-size:18px;color:var(--text-muted);box-shadow:none;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .pass-toggle:hover{color:var(--primary-light);}
+  .benef-item{background:#0d2138;border-radius:10px;padding:12px;margin:8px 0;border-left:3px solid var(--primary);}
+  .benef-item.entregado{border-left-color:var(--success);opacity:.78;}
+  .benef-item .name{font-weight:600;}
+  .benef-item .actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+  .sector-card{cursor:pointer;transition:transform .15s;}
+  .sector-card:hover{transform:scale(1.01);}
+  .map-box{width:100%;height:150px;border-radius:10px;margin-top:8px;background:#0d2138;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:12px;text-align:center;padding:10px;}
+  .thumb-preview{width:100%;max-height:200px;object-fit:contain;border-radius:8px;margin-top:8px;background:#000;}
+  .gps-ok{color:var(--success);font-size:12px;margin-top:6px;}
 </style>
 </head>
 <body>
@@ -234,13 +96,15 @@
     <h1>🔥 GasGuarenas</h1>
     <p>Distribución de Gas Doméstico · Municipio Plaza</p>
   </div>
-
   <div class="card">
     <h3>Iniciar sesión</h3>
     <label>Correo electrónico</label>
     <input type="email" id="login-email" placeholder="tucorreo@ejemplo.com" autocomplete="email" />
     <label>Contraseña</label>
-    <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" />
+    <div class="pass-wrap">
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" />
+      <button type="button" class="pass-toggle" id="toggle-pass" title="Mostrar/ocultar">👁️</button>
+    </div>
     <button id="btn-login">Entrar</button>
     <span class="link" id="link-recover">¿Olvidaste tu contraseña?</span>
     <span class="link" id="link-register">Crear nueva cuenta</span>
@@ -254,9 +118,15 @@
     <label>Correo electrónico</label>
     <input type="email" id="reg-email" placeholder="tucorreo@ejemplo.com" />
     <label>Contraseña (mín. 8 caracteres)</label>
-    <input type="password" id="reg-pass" placeholder="••••••••" />
+    <div class="pass-wrap">
+      <input type="password" id="reg-pass" placeholder="••••••••" />
+      <button type="button" class="pass-toggle" id="toggle-reg-pass">👁️</button>
+    </div>
     <label>Confirmar contraseña</label>
-    <input type="password" id="reg-pass2" placeholder="••••••••" />
+    <div class="pass-wrap">
+      <input type="password" id="reg-pass2" placeholder="••••••••" />
+      <button type="button" class="pass-toggle" id="toggle-reg-pass2">👁️</button>
+    </div>
     <button id="btn-register">Registrarme</button>
     <span class="link" id="link-back-login">← Volver al inicio de sesión</span>
   </div>
@@ -266,7 +136,7 @@
 <div id="screen-recover" class="screen">
   <div class="logo"><h1>Recuperar contraseña</h1></div>
   <div class="card">
-    <p class="muted">Te enviaremos un enlace seguro a tu correo. El enlace expira en 15 minutos y solo puede usarse una vez.</p>
+    <p class="muted">Te enviaremos un enlace seguro a tu correo.</p>
     <label>Correo electrónico</label>
     <input type="email" id="rec-email" placeholder="tucorreo@ejemplo.com" />
     <button id="btn-recover">Enviar enlace</button>
@@ -278,25 +148,25 @@
 <div id="screen-terms" class="screen">
   <div class="topbar"><h2>Términos y condiciones</h2></div>
   <div class="card">
-    <p style="line-height: 1.6;">En redacción.</p>
-    <p class="muted" style="margin-top: 14px;">Al continuar, aceptas los términos y condiciones de uso de GasGuarenas.</p>
+    <p style="line-height:1.6;">En redacción.</p>
+    <p class="muted" style="margin-top:14px;">Al continuar, aceptas los términos y condiciones.</p>
     <button id="btn-accept-terms" class="success">Aceptar y continuar</button>
   </div>
 </div>
 
-<!-- ============================= CLIENTE ============================= -->
+<!-- ============================= VOCERO / CLIENTE ============================= -->
 <div id="screen-client" class="screen">
   <div class="topbar">
     <h2>🔥 GasGuarenas</h2>
-    <span class="badge" id="client-user">Cliente</span>
+    <span class="badge" id="client-user">Vocero</span>
   </div>
-
-  <div class="gallery" id="gallery"></div>
+  <div id="client-content">
+    <div class="gallery" id="gallery"></div>
+  </div>
   <div class="spacer"></div>
-
   <div class="bottom-nav">
     <button data-tab="home" class="active"><span class="ico">🏠</span>Inicio</button>
-    <button data-tab="solicitar"><span class="ico">📦</span>Solicitar</button>
+    <button data-tab="beneficiarios"><span class="ico">👥</span>Beneficiarios</button>
     <button data-tab="historial"><span class="ico">🕓</span>Historial</button>
     <button data-tab="chat"><span class="ico">💬</span>Chat</button>
     <button data-tab="logout"><span class="ico">🚪</span>Salir</button>
@@ -307,7 +177,10 @@
 <div id="screen-master" class="screen">
   <div class="topbar">
     <h2>🛡️ Panel Master</h2>
-    <span class="badge" id="master-user">Master</span>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="btn-gallery-master" title="Subir a galería">📷</button>
+      <span class="badge" id="master-user">Master</span>
+    </div>
   </div>
   <div id="master-content"></div>
   <div class="spacer"></div>
@@ -321,18 +194,13 @@
   </div>
 </div>
 
-<!-- Toast -->
 <div id="toast-container"></div>
-
-<!-- Modal -->
-<div class="modal-overlay" id="modal">
-  <div class="modal" id="modal-content"></div>
-</div>
+<div class="modal-overlay" id="modal"><div class="modal" id="modal-content"></div></div>
 
 <script type="module">
 /* ============================================================
-   GasGuarenas · App principal
-   PocketBase SDK 0.26.2 (compatible con PB Server 0.36.x)
+   GasGuarenas v2.0 · App principal
+   PocketBase SDK 0.26.2
    ============================================================ */
 import PocketBase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/dist/pocketbase.es.mjs';
 
@@ -357,19 +225,32 @@ const monthKey   = () => new Date().toISOString().slice(0,7);
 const openModal  = (html) => { $('#modal-content').innerHTML = html; $('#modal').classList.add('active'); };
 const closeModal = () => $('#modal').classList.remove('active');
 $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+const getModel = () => pb.authStore.model || pb.authStore.record || null;
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const labelCilindro = (id) => (CFG.CILINDROS.find(c => c.id === id)?.label || id);
+const labelEstado = (id) => (CFG.ESTADOS_CILINDRO.find(c => c.id === id)?.label || id);
 
-/* ---------- Utilidad para el modelo de usuario ---------- */
-function getModel() {
-  return pb.authStore.model || pb.authStore.record || null;
+/* ---------- Password toggles ---------- */
+function setupToggle(btnId, inputId) {
+  const btn = $(btnId), inp = $(inputId);
+  if (!btn || !inp) return;
+  btn.onclick = () => {
+    const visible = inp.type === 'text';
+    inp.type = visible ? 'password' : 'text';
+    btn.textContent = visible ? '👁️' : '🙈';
+  };
 }
+setupToggle('#toggle-pass', '#login-pass');
+setupToggle('#toggle-reg-pass', '#reg-pass');
+setupToggle('#toggle-reg-pass2', '#reg-pass2');
 
 /* ============================================================
    AUTENTICACIÓN
    ============================================================ */
-$('#link-register').onclick      = () => show('screen-register');
-$('#link-recover').onclick       = () => show('screen-recover');
-$('#link-back-login').onclick    = () => show('screen-login');
-$('#link-back-login2').onclick   = () => show('screen-login');
+$('#link-register').onclick    = () => show('screen-register');
+$('#link-recover').onclick     = () => show('screen-recover');
+$('#link-back-login').onclick  = () => show('screen-login');
+$('#link-back-login2').onclick = () => show('screen-login');
 
 $('#btn-register').onclick = async () => {
   const email = $('#reg-email').value.trim();
@@ -380,14 +261,11 @@ $('#btn-register').onclick = async () => {
   try {
     await pb.collection('users').create({
       email, password: p1, passwordConfirm: p2,
-      emailVisibility: true,
-      rol: 'cliente',
+      emailVisibility: true, rol: 'cliente',
     });
     toast('Cuenta creada. Ya puedes iniciar sesión.');
     show('screen-login');
-  } catch (e) {
-    toast(e?.message || 'Error al registrar', true);
-  }
+  } catch (e) { toast(e?.message || 'Error al registrar', true); }
 };
 
 $('#btn-login').onclick = async () => {
@@ -398,9 +276,7 @@ $('#btn-login').onclick = async () => {
     await pb.collection('users').authWithPassword(email, pass);
     await registrarConexion();
     await routeByRole();
-  } catch (e) {
-    toast('Credenciales inválidas', true);
-  }
+  } catch (e) { toast('Credenciales inválidas', true); }
 };
 
 $('#btn-recover').onclick = async () => {
@@ -409,12 +285,9 @@ $('#btn-recover').onclick = async () => {
   try {
     await pb.collection('users').requestPasswordReset(email);
     toast('Si el correo existe, recibirás un enlace.');
-  } catch (e) {
-    toast('No se pudo enviar la solicitud', true);
-  }
+  } catch (e) { toast('No se pudo enviar la solicitud', true); }
 };
 
-/* ---------- Ruteo por rol ---------- */
 async function routeByRole() {
   const user = getModel();
   if (!user) return show('screen-login');
@@ -423,7 +296,6 @@ async function routeByRole() {
   return initCliente();
 }
 
-/* ---------- Términos ---------- */
 $('#btn-accept-terms').onclick = async () => {
   try {
     const user = getModel();
@@ -433,40 +305,35 @@ $('#btn-accept-terms').onclick = async () => {
   } catch (e) { toast('Error al guardar', true); }
 };
 
-/* ---------- Logout ---------- */
 async function logout() {
   try {
     const user = getModel();
-    if (user) {
-      await pb.collection('conexiones').create({
-        user: user.id, evento: 'logout', timestamp: new Date().toISOString()
-      });
-    }
+    if (user) await pb.collection('conexiones').create({
+      user: user.id, evento: 'logout', timestamp: new Date().toISOString()
+    });
   } catch {}
   pb.authStore.clear();
   show('screen-login');
 }
 
-/* ---------- Registro de conexión ---------- */
 async function registrarConexion() {
   try {
     const user = getModel();
     if (!user) return;
     await pb.collection('conexiones').create({
-      user: user.id,
-      evento: 'login',
+      user: user.id, evento: 'login',
       user_agent: navigator.userAgent,
-      timestamp: new Date().toISOString(),
-      activo: true,
+      timestamp: new Date().toISOString(), activo: true,
     });
   } catch (e) { console.warn('No se pudo registrar conexión', e); }
 }
 
 /* ============================================================
-   GALERÍA (pública para cliente)
+   GALERÍA
    ============================================================ */
 async function cargarGaleria() {
   const cont = $('#gallery');
+  if (!cont) return;
   cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando galería...</div>';
   try {
     const list = await pb.collection('galeria').getFullList({ sort: '-created', requestKey: null });
@@ -476,28 +343,28 @@ async function cargarGaleria() {
       const esVideo = /\.(mp4|webm|mov)$/i.test(item.archivo || '');
       const media = esVideo
         ? `<video src="${url}" controls playsinline preload="metadata"></video>`
-        : `<img src="${url}" alt="${item.descripcion || ''}" loading="lazy" />`;
-      return `<div class="media-card">${media}<div class="desc">${item.descripcion || ''}</div></div>`;
+        : `<img src="${url}" alt="${esc(item.descripcion || '')}" loading="lazy" />`;
+      return `<div class="media-card">${media}<div class="desc">${esc(item.descripcion || '')}</div></div>`;
     }).join('');
-  } catch (e) {
-    console.error(e);
-    cont.innerHTML = '<div class="empty">No se pudo cargar la galería.</div>';
-  }
+  } catch (e) { console.error(e); cont.innerHTML = '<div class="empty">No se pudo cargar la galería.</div>'; }
 }
 
 /* ============================================================
-   CLIENTE
+   CLIENTE / VOCERO
    ============================================================ */
 let clienteTab = 'home';
+let perfilVocero = null;
 
 function initCliente() {
   const user = getModel();
   $('#client-user').textContent = user.name || user.email;
   show('screen-client');
   clienteTab = 'home';
+  perfilVocero = null;
+  $('#client-content').innerHTML = '<div class="gallery" id="gallery"></div>';
   cargarGaleria();
   pintarNavCliente();
-  cargarPerfilCliente();
+  cargarPerfilVocero();
 }
 
 function pintarNavCliente() {
@@ -513,23 +380,22 @@ function pintarNavCliente() {
   });
 }
 
-async function cargarPerfilCliente() {
+async function cargarPerfilVocero() {
   try {
     const user = getModel();
-    const perfil = await pb.collection('perfiles')
+    perfilVocero = await pb.collection('perfiles')
       .getFirstListItem(`user="${user.id}"`, { requestKey: null })
       .catch(() => null);
-    window.__perfil = perfil;
-  } catch {}
+  } catch { perfilVocero = null; }
 }
 
 function renderClienteTab() {
+  const cont = $('#client-content');
   if (clienteTab === 'home') {
-    $('#gallery').style.display = '';
-    show('screen-client');
+    cont.innerHTML = '<div class="gallery" id="gallery"></div>';
     cargarGaleria();
-  } else if (clienteTab === 'solicitar') {
-    renderFormSolicitud();
+  } else if (clienteTab === 'beneficiarios') {
+    renderBeneficiarios();
   } else if (clienteTab === 'historial') {
     renderHistorialCliente();
   } else if (clienteTab === 'chat') {
@@ -537,195 +403,276 @@ function renderClienteTab() {
   }
 }
 
-/* ---------- Formulario de solicitud ---------- */
-function renderFormSolicitud() {
-  const perfil = window.__perfil;
-  if (perfil) {
-    openModal(`
-      <h3>Solicitar cilindro</h3>
-      <p class="muted" style="margin:8px 0 14px;">Hola ${perfil.nombre} ${perfil.apellido}, ¿qué cilindro necesitas hoy?</p>
-      <label>Cilindro</label>
-      <select id="sol-cilindro-simple">
-        ${CFG.CILINDROS.map(c => `<option value="${c.id}">${c.label}</option>`).join('')}
-      </select>
-      <button id="btn-sol-simple" class="success">Confirmar pedido</button>
-      <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cancelar</button>
-    `);
-    $('#btn-sol-simple').onclick = () => crearPedido(perfil, $('#sol-cilindro-simple').value);
+/* ---------- Beneficiarios (flujo vocero) ---------- */
+async function renderBeneficiarios() {
+  const cont = $('#client-content');
+  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando...</div>';
+  await cargarPerfilVocero();
+
+  if (!perfilVocero) {
+    cont.innerHTML = `
+      <div class="card">
+        <h3>Datos del vocero de la comunidad</h3>
+        <p class="muted">Este formulario se llena una sola vez.</p>
+        <label>Municipio</label>
+        <input value="${esc(CFG.MUNICIPIO_DEFAULT)}" disabled />
+        <label>Sector / Comunidad</label>
+        <input id="v-sector" placeholder="Ej: Guarenas Centro" />
+        <label>Ubicación GPS</label>
+        <div class="map-box" id="gps-box">Presiona el botón de abajo para capturar tu ubicación GPS</div>
+        <button class="secondary" id="btn-gps-vocero" style="width:100%;margin-top:8px;">📍 Usar mi ubicación actual</button>
+        <p class="gps-ok" id="gps-info-vocero"></p>
+        <label>Nombre</label>
+        <input id="v-nombre" placeholder="Tu nombre" />
+        <label>Apellido</label>
+        <input id="v-apellido" placeholder="Tu apellido" />
+        <label>Cédula</label>
+        <input id="v-cedula" placeholder="V-12345678" />
+        <label>Teléfono</label>
+        <input id="v-telefono" placeholder="0414-0000000" />
+        <hr style="border-color:rgba(77,171,247,.15);margin:18px 0;" />
+        <h3>Primer beneficiario</h3>
+        <label>Nombre</label>
+        <input id="b-nombre" placeholder="Nombre del beneficiario" />
+        <label>Apellido</label>
+        <input id="b-apellido" placeholder="Apellido" />
+        <label>Cédula</label>
+        <input id="b-cedula" placeholder="V-12345678" />
+        <label>Teléfono</label>
+        <input id="b-telefono" placeholder="0414-0000000" />
+        <label>Cilindro</label>
+        <select id="b-cilindro">${CFG.CILINDROS.map(c => `<option value="${c.id}">${esc(c.label)}</option>`).join('')}</select>
+        <label>Estado del cilindro</label>
+        <select id="b-estado">${CFG.ESTADOS_CILINDRO.map(c => `<option value="${c.id}">${esc(c.label)}</option>`).join('')}</select>
+        <button id="btn-save-vocero" class="success">Guardar</button>
+      </div>
+    `;
+    let coords = {};
+    $('#btn-gps-vocero').onclick = () => {
+      if (!navigator.geolocation) return toast('GPS no disponible', true);
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          $('#gps-info-vocero').textContent = `✅ ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`;
+          $('#gps-box').innerHTML = `📍 Ubicación capturada<br><b>${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}</b>`;
+        },
+        () => toast('No se pudo obtener la ubicación', true),
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    };
+
+    $('#btn-save-vocero').onclick = async () => {
+      const sector = $('#v-sector').value.trim();
+      const nombre = $('#v-nombre').value.trim();
+      const apellido = $('#v-apellido').value.trim();
+      const cedula = $('#v-cedula').value.trim();
+      const telefono = $('#v-telefono').value.trim();
+      if (!sector || !nombre || !apellido || !cedula || !telefono)
+        return toast('Completa los datos del vocero', true);
+      const b = {
+        nombre: $('#b-nombre').value.trim(),
+        apellido: $('#b-apellido').value.trim(),
+        cedula: $('#b-cedula').value.trim(),
+        telefono: $('#b-telefono').value.trim(),
+        cilindro: $('#b-cilindro').value,
+        estado_cilindro: $('#b-estado').value,
+      };
+      if (!b.nombre || !b.apellido || !b.cedula || !b.telefono)
+        return toast('Completa los datos del beneficiario', true);
+      try {
+        const user = getModel();
+        perfilVocero = await pb.collection('perfiles').create({
+          user: user.id, municipio: CFG.MUNICIPIO_DEFAULT,
+          sector, nombre, apellido, cedula, telefono,
+          gps_lat: coords.lat || null, gps_lng: coords.lng || null,
+        });
+        await pb.collection('beneficiarios').create({
+          user: user.id, sector, ...b, entregado: false,
+        });
+        toast('✅ Vocero y primer beneficiario guardados');
+        renderBeneficiarios();
+      } catch (e) { console.error(e); toast('Error al guardar', true); }
+    };
     return;
   }
 
+  const list = await pb.collection('beneficiarios').getFullList({
+    filter: `user="${getModel().id}"`,
+    sort: '-created', requestKey: null,
+  });
+
+  cont.innerHTML = `
+    <div class="card">
+      <h3>👥 Beneficiarios de ${esc(perfilVocero.sector)}</h3>
+      <p class="muted">Vocero: ${esc(perfilVocero.nombre)} ${esc(perfilVocero.apellido)}</p>
+      <button class="success" id="btn-add-benef" style="margin-top:12px;">➕ Agregar beneficiario</button>
+    </div>
+    <div id="benef-list">
+      ${list.length ? list.map(b => `
+        <div class="benef-item ${b.entregado ? 'entregado' : ''}">
+          <div class="name">${esc(b.nombre)} ${esc(b.apellido)}</div>
+          <div class="muted">C.I. ${esc(b.cedula)} · ${esc(b.telefono)}</div>
+          <div style="margin-top:6px;">
+            <span class="pill">${esc(labelCilindro(b.cilindro))}</span>
+            <span class="pill ${b.estado_cilindro === 'buen_estado' ? 'on' : b.estado_cilindro === 'mal_estado' ? 'warn' : ''}">
+              ${esc(labelEstado(b.estado_cilindro))}
+            </span>
+            ${b.entregado ? '<span class="pill on">Entregado</span>' : '<span class="pill off">Pendiente</span>'}
+          </div>
+          <div class="actions">
+            ${!b.entregado ? `<button class="success small" data-entregar="${b.id}">✅ Entregado</button>` : ''}
+            <button class="secondary small" data-edit="${b.id}">✏️ Editar</button>
+            <button class="danger small" data-del="${b.id}">🗑️ Eliminar</button>
+          </div>
+        </div>
+      `).join('') : '<div class="card"><div class="empty">Aún no has agregado beneficiarios.</div></div>'}
+    </div>
+  `;
+
+  $('#btn-add-benef').onclick = () => modalBeneficiario(null);
+  $$('[data-entregar]').forEach(btn => btn.onclick = () => marcarEntregado(btn.dataset.entregar));
+  $$('[data-edit]').forEach(btn => btn.onclick = () => {
+    const b = list.find(x => x.id === btn.dataset.edit);
+    modalBeneficiario(b);
+  });
+  $$('[data-del]').forEach(btn => btn.onclick = async () => {
+    if (!confirm('¿Eliminar este beneficiario?')) return;
+    try {
+      await pb.collection('beneficiarios').delete(btn.dataset.del);
+      toast('Eliminado');
+      renderBeneficiarios();
+    } catch { toast('Error al eliminar', true); }
+  });
+}
+
+function modalBeneficiario(b) {
+  const editando = !!b;
   openModal(`
-    <h3>Datos de la solicitud</h3>
-    <label>Municipio</label>
-    <input value="${CFG.MUNICIPIO_DEFAULT}" disabled />
-    <label>Sector (escrito)</label>
-    <input id="sol-sector" placeholder="Ej: Guarenas Centro" />
-    <label>Sector por GPS</label>
-    <button class="secondary" id="btn-gps">📍 Obtener ubicación actual</button>
-    <p class="muted" id="gps-info"></p>
+    <h3>${editando ? 'Editar' : 'Nuevo'} beneficiario</h3>
     <label>Nombre</label>
-    <input id="sol-nombre" placeholder="Tu nombre" />
+    <input id="mb-nombre" value="${esc(b?.nombre || '')}" />
     <label>Apellido</label>
-    <input id="sol-apellido" placeholder="Tu apellido" />
+    <input id="mb-apellido" value="${esc(b?.apellido || '')}" />
     <label>Cédula</label>
-    <input id="sol-cedula" placeholder="V-12345678" />
-    <label>Número de teléfono</label>
-    <input id="sol-telefono" placeholder="0414-0000000" />
-    <label>Cilindro solicitado</label>
-    <select id="sol-cilindro">
-      ${CFG.CILINDROS.map(c => `<option value="${c.id}">${c.label}</option>`).join('')}
+    <input id="mb-cedula" value="${esc(b?.cedula || '')}" />
+    <label>Teléfono</label>
+    <input id="mb-telefono" value="${esc(b?.telefono || '')}" />
+    <label>Cilindro</label>
+    <select id="mb-cilindro">
+      ${CFG.CILINDROS.map(c => `<option value="${c.id}" ${b?.cilindro === c.id ? 'selected' : ''}>${esc(c.label)}</option>`).join('')}
     </select>
-    <button id="btn-sol-full" class="success">Enviar solicitud</button>
+    <label>Estado del cilindro</label>
+    <select id="mb-estado">
+      ${CFG.ESTADOS_CILINDRO.map(c => `<option value="${c.id}" ${b?.estado_cilindro === c.id ? 'selected' : ''}>${esc(c.label)}</option>`).join('')}
+    </select>
+    <button class="success" id="mb-save">Guardar</button>
     <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cancelar</button>
   `);
-
-  let gps = null;
-  $('#btn-gps').onclick = () => {
-    if (!navigator.geolocation) return toast('GPS no disponible', true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        gps = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        $('#gps-info').textContent = `✅ Ubicación capturada: ${gps.lat.toFixed(5)}, ${gps.lng.toFixed(5)}`;
-      },
-      () => toast('No se pudo obtener la ubicación', true),
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  };
-
-  $('#btn-sol-full').onclick = async () => {
+  $('#mb-save').onclick = async () => {
     const data = {
-      sector: $('#sol-sector').value.trim(),
-      nombre: $('#sol-nombre').value.trim(),
-      apellido: $('#sol-apellido').value.trim(),
-      cedula: $('#sol-cedula').value.trim(),
-      telefono: $('#sol-telefono').value.trim(),
-      gps_lat: gps?.lat || null,
-      gps_lng: gps?.lng || null,
+      nombre: $('#mb-nombre').value.trim(),
+      apellido: $('#mb-apellido').value.trim(),
+      cedula: $('#mb-cedula').value.trim(),
+      telefono: $('#mb-telefono').value.trim(),
+      cilindro: $('#mb-cilindro').value,
+      estado_cilindro: $('#mb-estado').value,
     };
-    if (!data.sector || !data.nombre || !data.apellido || !data.cedula || !data.telefono)
+    if (!data.nombre || !data.apellido || !data.cedula || !data.telefono)
       return toast('Completa todos los campos', true);
-    const user = getModel();
     try {
-      const perfil = await pb.collection('perfiles').create({
-        user: user.id,
-        ...data,
-        municipio: CFG.MUNICIPIO_DEFAULT,
-      });
-      window.__perfil = perfil;
-      crearPedido(perfil, $('#sol-cilindro').value);
-    } catch (e) {
-      console.error(e);
-      toast('Error al guardar perfil', true);
-    }
+      if (editando) {
+        await pb.collection('beneficiarios').update(b.id, data);
+      } else {
+        await pb.collection('beneficiarios').create({
+          user: getModel().id, sector: perfilVocero.sector, ...data, entregado: false,
+        });
+      }
+      toast(editando ? 'Actualizado' : 'Agregado');
+      closeModal();
+      renderBeneficiarios();
+    } catch (e) { console.error(e); toast('Error al guardar', true); }
   };
 }
 
-/* ---------- Crear pedido ---------- */
-async function crearPedido(perfil, cilindro) {
+async function marcarEntregado(id) {
+  if (!confirm('¿Confirmas que este cilindro fue entregado?')) return;
   try {
-    const user = getModel();
-    await pb.collection('pedidos').create({
-      user: user.id,
-      perfil: perfil.id,
-      comunidad: perfil.sector,
-      nombre: perfil.nombre,
-      apellido: perfil.apellido,
-      cedula: perfil.cedula,
-      telefono: perfil.telefono,
-      gps_lat: perfil.gps_lat,
-      gps_lng: perfil.gps_lng,
-      cilindro,
-      estado: 'pendiente',
-      fecha: new Date().toISOString(),
-      dia: todayKey(),
-      mes: monthKey(),
+    const now = new Date().toISOString();
+    await pb.collection('beneficiarios').update(id, {
+      entregado: true, fecha_entrega: now,
+      dia_entrega: todayKey(), mes_entrega: monthKey(),
     });
-    toast('✅ Pedido registrado');
-    closeModal();
-  } catch (e) {
-    console.error(e);
-    toast('Error al registrar pedido', true);
-  }
+    toast('✅ Marcado como entregado');
+    renderBeneficiarios();
+  } catch (e) { toast('Error al actualizar', true); }
 }
 
-/* ---------- Historial cliente ---------- */
+/* ---------- Historial vocero ---------- */
 async function renderHistorialCliente() {
-  openModal(`
-    <h3>Historial de pedidos</h3>
-    <p class="muted">Mostrando los últimos 3 meses.</p>
-    <div id="hist-list"><div class="empty"><span class="spin"></span> Cargando...</div></div>
-    <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cerrar</button>
-  `);
+  const cont = $('#client-content');
+  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando historial...</div>';
   const limite = new Date(); limite.setMonth(limite.getMonth() - CFG.HISTORIAL_MESES);
   try {
     const user = getModel();
-    const list = await pb.collection('pedidos').getFullList({
-      filter: `user="${user.id}" && fecha >= "${limite.toISOString()}"`,
-      sort: '-fecha', requestKey: null,
+    const list = await pb.collection('beneficiarios').getFullList({
+      filter: `user="${user.id}" && entregado=true && fecha_entrega >= "${limite.toISOString()}"`,
+      sort: '-fecha_entrega', requestKey: null,
     });
-    if (!list.length) { $('#hist-list').innerHTML = '<div class="empty">No tienes pedidos aún.</div>'; return; }
-    $('#hist-list').innerHTML = list.map(p => `
-      <div class="card" style="margin:8px 0; padding:12px;">
-        <div style="display:flex; justify-content:space-between;">
-          <b>${p.cilindro === '10kg' ? 'Cilindro 10 kg' : 'Cilindro 18 kg'}</b>
-          <span class="pill ${p.estado === 'entregado' ? 'on' : ''}">${p.estado}</span>
-        </div>
-        <div class="muted" style="margin-top:4px;">${fmtDate(p.fecha)} · ${p.comunidad}</div>
+    cont.innerHTML = `
+      <div class="card">
+        <h3>🕓 Historial de entregas</h3>
+        <p class="muted">Últimos ${CFG.HISTORIAL_MESES} meses.</p>
       </div>
-    `).join('');
-  } catch (e) {
-    console.error(e);
-    $('#hist-list').innerHTML = '<div class="empty">Error al cargar historial.</div>';
-  }
+      ${list.length ? list.map(b => `
+        <div class="card" style="padding:12px;">
+          <b>${esc(b.nombre)} ${esc(b.apellido)}</b>
+          <div class="muted">${fmtDate(b.fecha_entrega)} · ${esc(labelCilindro(b.cilindro))}</div>
+        </div>
+      `).join('') : '<div class="card"><div class="empty">Sin entregas registradas.</div></div>'}
+    `;
+  } catch (e) { console.error(e); cont.innerHTML = '<div class="empty">Error al cargar.</div>'; }
 }
 
 /* ---------- Chat cliente ---------- */
 let chatInterval = null;
 function renderChatCliente() {
-  openModal(`
-    <h3>Chat con soporte</h3>
-    <div class="chat-box" id="chat-box"></div>
-    <textarea id="chat-input" rows="2" placeholder="Escribe tu mensaje..."></textarea>
-    <button id="chat-send">Enviar</button>
-    <button class="ghost" id="chat-close">Cerrar</button>
-  `);
+  const cont = $('#client-content');
+  cont.innerHTML = `
+    <div class="card">
+      <h3>Chat con soporte</h3>
+      <div class="chat-box" id="chat-box"></div>
+      <textarea id="chat-input" rows="2" placeholder="Escribe tu mensaje..."></textarea>
+      <button id="chat-send">Enviar</button>
+    </div>
+  `;
   const cargar = async () => {
     try {
       const user = getModel();
       const list = await pb.collection('mensajes').getFullList({
-        filter: `user="${user.id}"`,
-        sort: 'created', requestKey: null,
+        filter: `user="${user.id}"`, sort: 'created', requestKey: null,
       });
       const box = $('#chat-box');
       if (!box) return;
       box.innerHTML = list.map(m => `
         <div class="msg ${m.de_master ? 'other' : 'me'}">
-          ${m.texto}
-          <small>${fmtDate(m.created)}</small>
+          ${esc(m.texto)}<small>${fmtDate(m.created)}</small>
         </div>
       `).join('');
       box.scrollTop = box.scrollHeight;
     } catch {}
   };
   cargar();
-  chatInterval = setInterval(cargar, CFG.CHAT_POLL_MS);
-
+  if (chatInterval) clearInterval(chatInterval);
+  chatInterval = setInterval(() => { if (clienteTab === 'chat') cargar(); else clearInterval(chatInterval); }, CFG.CHAT_POLL_MS);
   $('#chat-send').onclick = async () => {
     const texto = $('#chat-input').value.trim();
     if (!texto) return;
     try {
-      const user = getModel();
-      await pb.collection('mensajes').create({
-        user: user.id,
-        texto,
-        de_master: false,
-      });
+      await pb.collection('mensajes').create({ user: getModel().id, texto, de_master: false });
       $('#chat-input').value = '';
       cargar();
     } catch { toast('Error al enviar', true); }
   };
-  $('#chat-close').onclick = () => { clearInterval(chatInterval); closeModal(); };
 }
 
 /* ============================================================
@@ -749,6 +696,7 @@ function initMaster() {
       renderMasterTab();
     };
   });
+  $('#btn-gallery-master').onclick = modalSubirGaleria;
   renderMasterTab();
 }
 
@@ -761,69 +709,94 @@ function renderMasterTab() {
   if (masterTab === 'chat')       renderChatMaster();
 }
 
-/* ---------- Pedidos del día ---------- */
+/* ---------- Pedidos agrupados por sector ---------- */
 async function renderPedidosHoy() {
   const cont = $('#master-content');
-  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando pedidos de hoy...</div>';
+  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando pedidos...</div>';
   try {
-    const list = await pb.collection('pedidos').getFullList({
-      filter: `dia="${todayKey()}"`,
+    const list = await pb.collection('beneficiarios').getFullList({
       sort: '-created', requestKey: null,
     });
     const grupos = {};
-    list.forEach(p => {
-      const key = p.comunidad || 'Sin sector';
-      if (!grupos[key]) grupos[key] = { personas: 0, c10: 0, c18: 0, ids: new Set() };
-      grupos[key].ids.add(p.user);
-      if (p.cilindro === '10kg') grupos[key].c10++; else grupos[key].c18++;
+    list.forEach(b => {
+      const k = b.sector || 'Sin sector';
+      if (!grupos[k]) grupos[k] = { total: 0, pend: 0, ent: 0, cil: {}, ids: new Set() };
+      grupos[k].total++;
+      grupos[k].ids.add(b.user);
+      if (b.entregado) grupos[k].ent++; else grupos[k].pend++;
+      grupos[k].cil[b.cilindro] = (grupos[k].cil[b.cilindro] || 0) + 1;
     });
 
     if (!list.length) {
-      cont.innerHTML = '<div class="card"><div class="empty">No hay pedidos registrados hoy.</div></div>';
+      cont.innerHTML = '<div class="card"><div class="empty">Aún no hay beneficiarios registrados.</div></div>';
       return;
     }
 
     cont.innerHTML = `
       <div class="card">
-        <h3>Pedidos de hoy · ${todayKey()}</h3>
-        <p class="muted">Reinicia automáticamente cada día.</p>
+        <h3>Pedidos agrupados por comunidad</h3>
+        <p class="muted">Toca una comunidad para ver el listado de personas.</p>
       </div>
       ${Object.entries(grupos).map(([comunidad, g]) => `
-        <div class="card">
+        <div class="card sector-card" data-sector="${esc(comunidad)}">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3>📍 ${comunidad}</h3>
-            <button class="danger" style="width:auto; padding:8px 12px; margin:0;" data-emg="${comunidad}">🚨 Emergencia</button>
+            <h3>📍 ${esc(comunidad)}</h3>
+            <button class="danger small" data-emg="${esc(comunidad)}" style="margin:0;">🚨</button>
           </div>
-          <p style="margin-top:8px;">👥 Personas: <b>${g.ids.size}</b></p>
-          <p>🛢️ Cilindros 10 kg: <b>${g.c10}</b> · 18 kg: <b>${g.c18}</b></p>
-          <p class="muted" style="margin-top:6px;">Total: ${g.c10 + g.c18} cilindros</p>
+          <p style="margin-top:8px;">👥 Personas: <b>${g.total}</b> · Pendientes: <b>${g.pend}</b> · Entregados: <b>${g.ent}</b></p>
+          <p>🛢️ ${Object.entries(g.cil).map(([k, v]) => `${esc(labelCilindro(k))}: <b>${v}</b>`).join(' · ') || 'Sin cilindros'}</p>
         </div>
       `).join('')}
     `;
-    $$('button[data-emg]').forEach(b => b.onclick = () => emergenciaComunidad(b.dataset.emg));
-  } catch (e) {
-    console.error(e);
-    cont.innerHTML = '<div class="empty">Error al cargar pedidos.</div>';
-  }
+    $$('[data-sector]').forEach(el => el.onclick = (e) => {
+      if (e.target.matches('button[data-emg]')) return;
+      abrirListadoComunidad(el.dataset.sector);
+    });
+    $$('button[data-emg]').forEach(b => b.onclick = (e) => {
+      e.stopPropagation();
+      emergenciaComunidad(b.dataset.emg);
+    });
+  } catch (e) { console.error(e); cont.innerHTML = '<div class="empty">Error al cargar pedidos.</div>'; }
   masterInterval = setInterval(renderPedidosHoy, 60000);
+}
+
+async function abrirListadoComunidad(sector) {
+  openModal(`<h3>📍 ${esc(sector)}</h3><div id="lista-sector"><div class="empty"><span class="spin"></span> Cargando...</div></div>
+    <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cerrar</button>`);
+  try {
+    const list = await pb.collection('beneficiarios').getFullList({
+      filter: `sector="${String(sector).replace(/"/g,'\\"')}"`,
+      sort: '-created', requestKey: null, expand: 'user',
+    });
+    $('#lista-sector').innerHTML = list.length ? list.map(b => `
+      <div class="benef-item ${b.entregado ? 'entregado' : ''}">
+        <div class="name">${esc(b.nombre)} ${esc(b.apellido)}</div>
+        <div class="muted">C.I. ${esc(b.cedula)} · ${esc(b.telefono)}</div>
+        <div style="margin-top:6px;">
+          <span class="pill">${esc(labelCilindro(b.cilindro))}</span>
+          <span class="pill ${b.estado_cilindro === 'buen_estado' ? 'on' : b.estado_cilindro === 'mal_estado' ? 'warn' : ''}">
+            ${esc(labelEstado(b.estado_cilindro))}
+          </span>
+          ${b.entregado ? '<span class="pill on">Entregado</span>' : '<span class="pill off">Pendiente</span>'}
+        </div>
+        <div class="muted" style="margin-top:4px;">Vocero: ${esc(b.expand?.user?.email || b.expand?.user?.name || '—')}</div>
+      </div>
+    `).join('') : '<div class="empty">Sin beneficiarios.</div>';
+  } catch (e) { console.error(e); $('#lista-sector').innerHTML = '<div class="empty">Error.</div>'; }
 }
 
 /* ---------- Emergencia ---------- */
 async function emergenciaComunidad(comunidad) {
   try {
     const contactos = await pb.collection('emergencia').getFullList({ requestKey: null });
-    if (!contactos.length) {
-      openModal(`<h3>🚨 Emergencia</h3><p class="muted">No hay contactos configurados. Ve a "Configurar emergencia".</p>
-        <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cerrar</button>`);
-      return;
-    }
+    if (!contactos.length) return toast('No hay contactos configurados', true);
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const lat = pos.coords.latitude, lng = pos.coords.longitude;
       const mensaje = `🚨 EMERGENCIA en ${comunidad}. Necesitamos apoyo inmediato.`;
       openModal(`
-        <h3>🚨 Emergencia · ${comunidad}</h3>
+        <h3>🚨 Emergencia · ${esc(comunidad)}</h3>
         <p class="muted">Selecciona a quién reportar:</p>
-        ${contactos.map(c => `<button class="danger" data-tel="${c.telefono}">${c.nombre} · ${c.telefono}</button>`).join('')}
+        ${contactos.map(c => `<button class="danger" data-tel="${esc(c.telefono)}">${esc(c.nombre)} · ${esc(c.telefono)}</button>`).join('')}
         <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cancelar</button>
       `);
       $$('#modal-content button[data-tel]').forEach(b => b.onclick = () => {
@@ -832,104 +805,97 @@ async function emergenciaComunidad(comunidad) {
         window.open(`https://wa.me/${tel}?text=${texto}`, '_blank');
         closeModal();
       });
-    }, () => {
-      toast('No se pudo obtener GPS', true);
-    }, { enableHighAccuracy: true, timeout: 8000 });
+    }, () => toast('No se pudo obtener GPS', true), { enableHighAccuracy: true, timeout: 8000 });
   } catch (e) { toast('Error', true); }
 }
 
 /* ---------- Reporte mensual ---------- */
 async function renderReporteMensual() {
   const cont = $('#master-content');
-  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando reporte mensual...</div>';
+  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando reporte...</div>';
   try {
-    const list = await pb.collection('pedidos').getFullList({
-      filter: `mes="${monthKey()}"`, requestKey: null,
+    const list = await pb.collection('beneficiarios').getFullList({
+      filter: `entregado=true && mes_entrega="${monthKey()}"`,
+      requestKey: null,
     });
     const grupos = {};
-    list.forEach(p => {
-      const k = p.comunidad || 'Sin sector';
-      if (!grupos[k]) grupos[k] = { personas: new Set(), sol10: 0, sol18: 0, ent10: 0, ent18: 0 };
-      grupos[k].personas.add(p.user);
-      if (p.cilindro === '10kg') { grupos[k].sol10++; if (p.estado === 'entregado') grupos[k].ent10++; }
-      else { grupos[k].sol18++; if (p.estado === 'entregado') grupos[k].ent18++; }
+    list.forEach(b => {
+      const k = b.sector || 'Sin sector';
+      if (!grupos[k]) grupos[k] = { personas: new Set(), cil: {} };
+      grupos[k].personas.add(b.user);
+      grupos[k].cil[b.cilindro] = (grupos[k].cil[b.cilindro] || 0) + 1;
     });
 
     cont.innerHTML = `
       <div class="card">
         <h3>📊 Reporte mensual · ${monthKey()}</h3>
-        <p class="muted">Se reinicia automáticamente cada mes.</p>
+        <p class="muted">Entregas confirmadas este mes.</p>
         <div class="row" style="margin-top:10px;">
           <button class="secondary" id="btn-imprimir">🖨️ Imprimir</button>
-          <button class="success" id="btn-excel">📥 Exportar Excel</button>
+          <button class="success" id="btn-excel">📥 Excel</button>
         </div>
       </div>
       <div class="card">
         <table>
-          <thead><tr><th>Comunidad</th><th>👥</th><th>10kg</th><th>18kg</th><th>Entr.</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Comunidad</th><th>👥</th>
+              ${CFG.CILINDROS.map(c => `<th>${esc(c.label.replace('Cilindro ',''))}</th>`).join('')}
+            </tr>
+          </thead>
           <tbody>
             ${Object.entries(grupos).map(([k,g]) => `
               <tr>
-                <td>${k}</td>
+                <td>${esc(k)}</td>
                 <td>${g.personas.size}</td>
-                <td>${g.sol10}</td>
-                <td>${g.sol18}</td>
-                <td>${g.ent10 + g.ent18}</td>
+                ${CFG.CILINDROS.map(c => `<td>${g.cil[c.id] || 0}</td>`).join('')}
               </tr>
-            `).join('') || '<tr><td colspan="5" class="empty">Sin datos</td></tr>'}
+            `).join('') || `<tr><td colspan="${2 + CFG.CILINDROS.length}" class="empty">Sin datos</td></tr>`}
           </tbody>
         </table>
       </div>
     `;
     $('#btn-imprimir').onclick = () => window.print();
-    $('#btn-excel').onclick = () => exportarExcel(grupos);
-  } catch (e) {
-    console.error(e);
-    cont.innerHTML = '<div class="empty">Error al cargar reporte.</div>';
-  }
-}
-
-function exportarExcel(grupos) {
-  let csv = 'Comunidad,Personas,Cilindros 10kg,Cilindros 18kg,Entregados\n';
-  Object.entries(grupos).forEach(([k,g]) => {
-    csv += `"${k}",${g.personas.size},${g.sol10},${g.sol18},${g.ent10 + g.ent18}\n`;
-  });
-  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `GasGuarenas_${monthKey()}.csv`;
-  a.click();
+    $('#btn-excel').onclick = () => {
+      const headers = ['Comunidad', 'Personas', ...CFG.CILINDROS.map(c => c.label)];
+      let csv = headers.join(',') + '\n';
+      Object.entries(grupos).forEach(([k, g]) => {
+        const row = [`"${k}"`, g.personas.size, ...CFG.CILINDROS.map(c => g.cil[c.id] || 0)];
+        csv += row.join(',') + '\n';
+      });
+      const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `GasGuarenas_${monthKey()}.csv`;
+      a.click();
+    };
+  } catch (e) { console.error(e); cont.innerHTML = '<div class="empty">Error.</div>'; }
 }
 
 /* ---------- Configurar emergencia ---------- */
 async function renderConfigEmergencia() {
   const cont = $('#master-content');
-  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando contactos...</div>';
+  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando...</div>';
   try {
     const list = await pb.collection('emergencia').getFullList({ sort: 'created', requestKey: null });
     cont.innerHTML = `
       <div class="card">
-        <h3>🚨 Contactos de emergencia</h3>
-        <p class="muted">Hasta 4 números de WhatsApp.</p>
-        <div id="emg-list">
-          ${list.map(c => `
-            <div class="card" style="padding:10px; margin:8px 0;">
-              <b>${c.nombre}</b> · ${c.telefono}
-              <button class="danger" style="width:auto; padding:6px 10px; margin-top:6px;" data-del="${c.id}">Eliminar</button>
-            </div>
-          `).join('') || '<div class="empty">Sin contactos</div>'}
-        </div>
+        <h3>🚨 Contactos (máx. 4)</h3>
+        ${list.map(c => `
+          <div class="benef-item">
+            <b>${esc(c.nombre)}</b> · ${esc(c.telefono)}
+            <div class="actions"><button class="danger small" data-del="${c.id}">Eliminar</button></div>
+          </div>
+        `).join('') || '<div class="empty">Sin contactos</div>'}
       </div>
       <div class="card">
-        <h3>Agregar contacto</h3>
-        <label>Nombre (PC, Bomberos, Policía, Ven911...)</label>
-        <input id="emg-nombre" placeholder="Ej: Bomberos" />
-        <label>Número WhatsApp (con código país, ej: 584140000000)</label>
-        <input id="emg-tel" placeholder="584140000000" />
-        <button class="success" id="emg-add">Guardar contacto</button>
+        <h3>Agregar</h3>
+        <input id="emg-nombre" placeholder="Nombre (Bomberos, PC...)" />
+        <input id="emg-tel" placeholder="584140000000" style="margin-top:8px;" />
+        <button class="success" id="emg-add" style="margin-top:10px;">Guardar</button>
       </div>
     `;
-    $$('button[data-del]').forEach(b => b.onclick = async () => {
+    $$('[data-del]').forEach(b => b.onclick = async () => {
       if (!confirm('¿Eliminar?')) return;
       await pb.collection('emergencia').delete(b.dataset.del);
       renderConfigEmergencia();
@@ -939,16 +905,11 @@ async function renderConfigEmergencia() {
       const nombre = $('#emg-nombre').value.trim();
       const telefono = $('#emg-tel').value.trim();
       if (!nombre || !telefono) return toast('Completa los campos', true);
-      try {
-        await pb.collection('emergencia').create({ nombre, telefono });
-        toast('Contacto guardado');
-        renderConfigEmergencia();
-      } catch (e) { toast('Error al guardar', true); }
+      await pb.collection('emergencia').create({ nombre, telefono });
+      toast('Guardado');
+      renderConfigEmergencia();
     };
-  } catch (e) {
-    console.error(e);
-    cont.innerHTML = '<div class="empty">Error al cargar contactos.</div>';
-  }
+  } catch (e) { console.error(e); cont.innerHTML = '<div class="empty">Error.</div>'; }
 }
 
 /* ---------- Usuarios activos ---------- */
@@ -962,28 +923,20 @@ async function renderUsuariosActivos() {
         sort: '-timestamp', requestKey: null, expand: 'user',
       });
       const unicos = {};
-      list.forEach(c => {
-        if (c.expand?.user) unicos[c.user] = c;
-      });
+      list.forEach(c => { if (c.expand?.user) unicos[c.user] = c; });
       cont.innerHTML = `
-        <div class="card">
-          <h3>🟢 Usuarios activos</h3>
-          <p class="muted">Últimos 15 minutos.</p>
-        </div>
+        <div class="card"><h3>🟢 Activos (15 min)</h3></div>
         <div class="card">
           ${Object.values(unicos).length ? Object.values(unicos).map(c => `
             <div style="padding:8px 0; border-bottom:1px solid rgba(77,171,247,.15);">
-              <b>${c.expand.user.name || c.expand.user.email}</b>
+              <b>${esc(c.expand.user.name || c.expand.user.email)}</b>
               <span class="pill on">activo</span>
               <div class="muted">${fmtDate(c.timestamp)}</div>
             </div>
           `).join('') : '<div class="empty">Nadie conectado.</div>'}
         </div>
       `;
-    } catch (e) {
-      console.error(e);
-      cont.innerHTML = '<div class="empty">Error al cargar conexiones.</div>';
-    }
+    } catch { cont.innerHTML = '<div class="empty">Error.</div>'; }
   };
   cargar();
   masterInterval = setInterval(cargar, CFG.USUARIOS_ACTIVOS_POLL_MS);
@@ -992,28 +945,23 @@ async function renderUsuariosActivos() {
 /* ---------- Chat Master ---------- */
 async function renderChatMaster() {
   const cont = $('#master-content');
-  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando conversaciones...</div>';
+  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando...</div>';
   try {
     const msgs = await pb.collection('mensajes').getFullList({ sort: '-created', requestKey: null, expand: 'user' });
     const convs = {};
-    msgs.forEach(m => {
-      if (!convs[m.user]) convs[m.user] = { user: m.expand?.user, ultimo: m };
-    });
+    msgs.forEach(m => { if (!convs[m.user]) convs[m.user] = { user: m.expand?.user, ultimo: m }; });
     cont.innerHTML = `
       <div class="card"><h3>💬 Conversaciones</h3></div>
       ${Object.values(convs).length ? Object.values(convs).map(c => `
-        <div class="card" style="cursor:pointer;" data-chat="${c.user?.id}">
-          <b>${c.user?.email || 'Cliente'}</b>
-          <div class="muted">${c.last?.texto ? '' : ''}${(c.ultimo.texto || '').slice(0,60)}</div>
+        <div class="card sector-card" data-chat="${c.user?.id}">
+          <b>${esc(c.user?.email || 'Cliente')}</b>
+          <div class="muted">${esc((c.ultimo.texto || '').slice(0,60))}</div>
           <div class="muted">${fmtDate(c.ultimo.created)}</div>
         </div>
       `).join('') : '<div class="card"><div class="empty">Sin mensajes.</div></div>'}
     `;
     $$('[data-chat]').forEach(el => el.onclick = () => abrirChatMaster(el.dataset.chat));
-  } catch (e) {
-    console.error(e);
-    cont.innerHTML = '<div class="empty">Error.</div>';
-  }
+  } catch { cont.innerHTML = '<div class="empty">Error.</div>'; }
 }
 
 async function abrirChatMaster(userId) {
@@ -1031,10 +979,7 @@ async function abrirChatMaster(userId) {
     const box = $('#chat-box-m');
     if (!box) return;
     box.innerHTML = list.map(m => `
-      <div class="msg ${m.de_master ? 'me' : 'other'}">
-        ${m.texto}
-        <small>${fmtDate(m.created)}</small>
-      </div>
+      <div class="msg ${m.de_master ? 'me' : 'other'}">${esc(m.texto)}<small>${fmtDate(m.created)}</small></div>
     `).join('');
     box.scrollTop = box.scrollHeight;
   };
@@ -1052,21 +997,59 @@ async function abrirChatMaster(userId) {
   });
 }
 
+/* ---------- Subir galería (MASTER) ---------- */
+function modalSubirGaleria() {
+  openModal(`
+    <h3>📷 Subir a galería</h3>
+    <label>Archivo (imagen o video, máx 20 MB)</label>
+    <input type="file" id="gal-file" accept="image/*,video/*" />
+    <label>Descripción</label>
+    <input id="gal-desc" placeholder="Breve descripción" />
+    <div id="gal-preview"></div>
+    <button class="success" id="gal-save">Subir</button>
+    <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cancelar</button>
+  `);
+  $('#gal-file').onchange = (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const url = URL.createObjectURL(f);
+    const esVideo = f.type.startsWith('video');
+    $('#gal-preview').innerHTML = esVideo
+      ? `<video src="${url}" class="thumb-preview" controls></video>`
+      : `<img src="${url}" class="thumb-preview" />`;
+  };
+  $('#gal-save').onclick = async () => {
+    const f = $('#gal-file').files[0];
+    const descripcion = $('#gal-desc').value.trim();
+    if (!f) return toast('Selecciona un archivo', true);
+    if (f.size > 20 * 1024 * 1024) return toast('El archivo supera 20 MB', true);
+    const fd = new FormData();
+    fd.append('archivo', f);
+    fd.append('descripcion', descripcion);
+    try {
+      $('#gal-save').disabled = true;
+      $('#gal-save').innerHTML = '<span class="spin"></span> Subiendo...';
+      await pb.collection('galeria').create(fd);
+      toast('✅ Publicado en galería');
+      closeModal();
+    } catch (e) {
+      console.error(e);
+      toast('Error al subir', true);
+      $('#gal-save').disabled = false;
+      $('#gal-save').textContent = 'Subir';
+    }
+  };
+}
+
 /* ============================================================
    ARRANQUE
    ============================================================ */
 window.addEventListener('load', () => {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  }
-  if (pb.authStore.isValid) routeByRole();
-  else show('screen-login');
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+  if (pb.authStore.isValid) routeByRole(); else show('screen-login');
 });
 
-// Refrescar token cada 10 min
-setInterval(() => {
-  if (pb.authStore.isValid) pb.collection('users').authRefresh().catch(() => {});
-}, 10 * 60 * 1000);
+setInterval(() => { if (pb.authStore.isValid) pb.collection('users').authRefresh().catch(() => {}); }, 10 * 60 * 1000);
 </script>
 </body>
 </html>

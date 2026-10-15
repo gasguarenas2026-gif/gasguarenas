@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0d6efd" />
+<title>GasGuarenas</title>
+<link rel="manifest" href="./manifest.json" />
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2933/2933933.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<script src="./config.js"></script>
+<style>
+  :root {
+    --primary: #0d6efd;
+    --primary-dark: #0a58ca;
+    --primary-light: #4dabf7;
+    --accent: #00d4ff;
+    --bg: #0a1929;
+    --bg-card: #132f4c;
+    --text: #e7f1ff;
+    --text-muted: #8fa8c8;
+    --danger: #ff4d4f;
+    --success: #52c41a;
+    --radius: 14px;
+    --shadow: 0 8px 24px rgba(0,0,0,.35);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(1200px 600px at 50% -10%, #133a63 0%, var(--bg) 60%);
+    color: var(--text);
+    overflow-x: hidden;
+    min-height: 100vh;
+    animation: bgShift 18s ease-in-out infinite alternate;
+  }
+  @keyframes bgShift {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+  }
+  .screen { display: none; padding: 16px; min-height: 100vh; animation: fadeIn .45s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+
+  h1, h2, h3 { font-weight: 700; letter-spacing: .3px; }
+  .logo { text-align: center; margin: 20px 0 8px; }
+  .logo h1 {
+    font-size: 32px;
+    background: linear-gradient(90deg, var(--primary-light), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .logo p { color: var(--text-muted); font-size: 13px; margin-top: 4px; }
+
+  .card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(77,171,247,.15);
+    margin-bottom: 14px;
+    animation: cardIn .5s cubic-bezier(.2,.7,.3,1.2);
+  }
+  @keyframes cardIn { from { opacity: 0; transform: scale(.96);} to { opacity: 1; transform: scale(1);} }
+
+  label { display: block; font-size: 13px; color: var(--text-muted); margin: 10px 0 6px; }
+  input, select, textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(77,171,247,.25);
+    background: #0d2138;
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(13,110,253,.25);
+  }
+
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    transition: transform .15s ease, box-shadow .2s ease, filter .2s;
+    width: 100%;
+    margin-top: 10px;
+    box-shadow: 0 6px 16px rgba(13,110,253,.35);
+  }
+  button:active { transform: scale(.97); }
+  button:hover { filter: brightness(1.1); }
+  button.secondary {
+    background: linear-gradient(135deg, #1e4a7a, #153a5c);
+    box-shadow: 0 6px 16px rgba(0,0,0,.35);
+  }
+  button.danger { background: linear-gradient(135deg, #ff4d4f, #c0392b); }
+  button.success { background: linear-gradient(135deg, #52c41a, #389e0d); }
+  button.ghost {
+    background: transparent;
+    border: 1px solid rgba(77,171,247,.4);
+    color: var(--primary-light);
+    box-shadow: none;
+  }
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1; }
+
+  .link { color: var(--primary-light); text-align: center; display: block; margin-top: 12px; font-size: 14px; cursor: pointer; text-decoration: underline; }
+
+  /* Header */
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 16px; background: rgba(19,47,76,.85);
+    backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 50;
+    border-bottom: 1px solid rgba(77,171,247,.15);
+  }
+  .topbar h2 { font-size: 17px; }
+  .topbar .badge {
+    background: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 11px;
+  }
+
+  /* Galería */
+  .gallery {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .media-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    animation: cardIn .5s ease;
+  }
+  .media-card img, .media-card video {
+    width: 100%; height: 220px; object-fit: cover; display: block; background: #000;
+  }
+  .media-card .desc { padding: 10px 12px; font-size: 13px; color: var(--text-muted); }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    display: flex; justify-content: space-around;
+    background: rgba(19,47,76,.95);
+    backdrop-filter: blur(10px);
+    padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(77,171,247,.2);
+    z-index: 100;
+  }
+  .bottom-nav button {
+    all: unset;
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px;
+    color: var(--text-muted);
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: color .2s, background .2s;
+  }
+  .bottom-nav button .ico { font-size: 20px; display: block; margin-bottom: 2px; }
+  .bottom-nav button.active { color: var(--accent); background: rgba(0,212,255,.08); }
+
+  .spacer { height: 90px; }
+
+  /* Chat */
+  .chat-box {
+    height: 60vh; overflow-y: auto;
+    background: #0d2138; border-radius: 12px; padding: 10px;
+    margin-bottom: 10px;
+  }
+  .msg { max-width: 80%; padding: 8px 12px; border-radius: 12px; margin: 6px 0; font-size: 14px; animation: cardIn .3s; }
+  .msg.me { background: var(--primary); margin-left: auto; }
+  .msg.other { background: #1e4a7a; }
+  .msg small { display: block; font-size: 10px; opacity: .7; margin-top: 2px; }
+
+  /* Toast */
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--success); color: #fff; padding: 10px 18px; border-radius: 10px;
+    z-index: 999; box-shadow: var(--shadow); font-size: 14px;
+    animation: toastIn .3s ease;
+  }
+  .toast.error { background: var(--danger); }
+  @keyframes toastIn { from { opacity: 0; transform: translate(-50%, -20px);} to { opacity: 1; transform: translate(-50%, 0);} }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.7);
+    display: none; justify-content: center; align-items: center; z-index: 200; padding: 16px;
+  }
+  .modal-overlay.active { display: flex; animation: fadeIn .2s; }
+  .modal {
+    background: var(--bg-card); border-radius: var(--radius); padding: 20px;
+    max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto;
+    box-shadow: var(--shadow);
+  }
+
+  .spin {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+    border-radius: 50%; animation: spin .8s linear infinite;
+    margin-right: 6px; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .muted { color: var(--text-muted); font-size: 12px; }
+  .empty { text-align: center; color: var(--text-muted); padding: 24px; font-size: 14px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(77,171,247,.15); }
+  th { color: var(--primary-light); font-weight: 600; }
+
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; background: #1e4a7a; }
+  .pill.on { background: var(--success); }
+  .pill.off { background: #555; }
+</style>
+</head>
+<body>
+
+<!-- ============================= LOGIN ============================= -->
+<div id="screen-login" class="screen active">
+  <div class="logo">
+    <h1>🔥 GasGuarenas</h1>
+    <p>Distribución de Gas Doméstico · Municipio Plaza</p>
+  </div>
+
+  <div class="card">
+    <h3>Iniciar sesión</h3>
+    <label>Correo electrónico</label>
+    <input type="email" id="login-email" placeholder="tucorreo@ejemplo.com" autocomplete="email" />
+    <label>Contraseña</label>
+    <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" />
+    <button id="btn-login">Entrar</button>
+    <span class="link" id="link-recover">¿Olvidaste tu contraseña?</span>
+    <span class="link" id="link-register">Crear nueva cuenta</span>
+  </div>
+</div>
+
+<!-- ============================= REGISTRO ============================= -->
+<div id="screen-register" class="screen">
+  <div class="logo"><h1>Crear cuenta</h1></div>
+  <div class="card">
+    <label>Correo electrónico</label>
+    <input type="email" id="reg-email" placeholder="tucorreo@ejemplo.com" />
+    <label>Contraseña (mín. 8 caracteres)</label>
+    <input type="password" id="reg-pass" placeholder="••••••••" />
+    <label>Confirmar contraseña</label>
+    <input type="password" id="reg-pass2" placeholder="••••••••" />
+    <button id="btn-register">Registrarme</button>
+    <span class="link" id="link-back-login">← Volver al inicio de sesión</span>
+  </div>
+</div>
+
+<!-- ============================= RECUPERAR ============================= -->
+<div id="screen-recover" class="screen">
+  <div class="logo"><h1>Recuperar contraseña</h1></div>
+  <div class="card">
+    <p class="muted">Te enviaremos un enlace seguro a tu correo. El enlace expira en 15 minutos y solo puede usarse una vez.</p>
+    <label>Correo electrónico</label>
+    <input type="email" id="rec-email" placeholder="tucorreo@ejemplo.com" />
+    <button id="btn-recover">Enviar enlace</button>
+    <span class="link" id="link-back-login2">← Volver</span>
+  </div>
+</div>
+
+<!-- ============================= TÉRMINOS ============================= -->
+<div id="screen-terms" class="screen">
+  <div class="topbar"><h2>Términos y condiciones</h2></div>
+  <div class="card">
+    <p style="line-height: 1.6;">En redacción.</p>
+    <p class="muted" style="margin-top: 14px;">Al continuar, aceptas los términos y condiciones de uso de GasGuarenas.</p>
+    <button id="btn-accept-terms" class="success">Aceptar y continuar</button>
+  </div>
+</div>
+
+<!-- ============================= CLIENTE ============================= -->
+<div id="screen-client" class="screen">
+  <div class="topbar">
+    <h2>🔥 GasGuarenas</h2>
+    <span class="badge" id="client-user">Cliente</span>
+  </div>
+
+  <div class="gallery" id="gallery"></div>
+  <div class="spacer"></div>
+
+  <div class="bottom-nav">
+    <button data-tab="home" class="active"><span class="ico">🏠</span>Inicio</button>
+    <button data-tab="solicitar"><span class="ico">📦</span>Solicitar</button>
+    <button data-tab="historial"><span class="ico">🕓</span>Historial</button>
+    <button data-tab="chat"><span class="ico">💬</span>Chat</button>
+    <button data-tab="logout"><span class="ico">🚪</span>Salir</button>
+  </div>
+</div>
+
+<!-- ============================= MASTER ============================= -->
+<div id="screen-master" class="screen">
+  <div class="topbar">
+    <h2>🛡️ Panel Master</h2>
+    <span class="badge" id="master-user">Master</span>
+  </div>
+  <div id="master-content"></div>
+  <div class="spacer"></div>
+  <div class="bottom-nav">
+    <button data-mtab="pedidos" class="active"><span class="ico">📋</span>Pedidos</button>
+    <button data-mtab="mensual"><span class="ico">📊</span>Mensual</button>
+    <button data-mtab="emergencia"><span class="ico">🚨</span>Emergencia</button>
+    <button data-mtab="activos"><span class="ico">🟢</span>Activos</button>
+    <button data-mtab="chat"><span class="ico">💬</span>Chat</button>
+    <button data-mtab="logout"><span class="ico">🚪</span>Salir</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast-container"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script type="module">
+/* ============================================================
+   GasGuarenas · App principal
+   PocketBase SDK 0.26.2 (compatible con PB Server 0.36.x)
+   ============================================================ */
+import PocketBase from 'https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/dist/pocketbase.es.mjs';
+
+const CFG = window.GAS_CONFIG;
+const pb  = new PocketBase(CFG.POCKETBASE_URL);
+pb.autoCancellation(false);
+
+/* ---------- Helpers ---------- */
+const $  = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+const show = (id) => { $$('.screen').forEach(s => s.classList.remove('active')); $('#'+id).classList.add('active'); window.scrollTo(0,0); };
+const toast = (msg, isErr=false) => {
+  const t = document.createElement('div');
+  t.className = 'toast' + (isErr ? ' error' : '');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.remove(), 300); }, 2600);
+};
+const fmtDate = (d) => new Date(d).toLocaleString('es-VE', { dateStyle:'short', timeStyle:'short' });
+const todayKey   = () => new Date().toISOString().slice(0,10);
+const monthKey   = () => new Date().toISOString().slice(0,7);
+const openModal  = (html) => { $('#modal-content').innerHTML = html; $('#modal').classList.add('active'); };
+const closeModal = () => $('#modal').classList.remove('active');
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+
+/* ---------- Utilidad para el modelo de usuario ---------- */
+function getModel() {
+  return pb.authStore.model || pb.authStore.record || null;
+}
+
+/* ============================================================
+   AUTENTICACIÓN
+   ============================================================ */
+$('#link-register').onclick      = () => show('screen-register');
+$('#link-recover').onclick       = () => show('screen-recover');
+$('#link-back-login').onclick    = () => show('screen-login');
+$('#link-back-login2').onclick   = () => show('screen-login');
+
+$('#btn-register').onclick = async () => {
+  const email = $('#reg-email').value.trim();
+  const p1 = $('#reg-pass').value, p2 = $('#reg-pass2').value;
+  if (!email || !p1) return toast('Completa todos los campos', true);
+  if (p1.length < 8) return toast('La contraseña debe tener al menos 8 caracteres', true);
+  if (p1 !== p2) return toast('Las contraseñas no coinciden', true);
+  try {
+    await pb.collection('users').create({
+      email, password: p1, passwordConfirm: p2,
+      emailVisibility: true,
+      rol: 'cliente',
+    });
+    toast('Cuenta creada. Ya puedes iniciar sesión.');
+    show('screen-login');
+  } catch (e) {
+    toast(e?.message || 'Error al registrar', true);
+  }
+};
+
+$('#btn-login').onclick = async () => {
+  const email = $('#login-email').value.trim();
+  const pass  = $('#login-pass').value;
+  if (!email || !pass) return toast('Completa los campos', true);
+  try {
+    await pb.collection('users').authWithPassword(email, pass);
+    await registrarConexion();
+    await routeByRole();
+  } catch (e) {
+    toast('Credenciales inválidas', true);
+  }
+};
+
+$('#btn-recover').onclick = async () => {
+  const email = $('#rec-email').value.trim();
+  if (!email) return toast('Ingresa tu correo', true);
+  try {
+    await pb.collection('users').requestPasswordReset(email);
+    toast('Si el correo existe, recibirás un enlace.');
+  } catch (e) {
+    toast('No se pudo enviar la solicitud', true);
+  }
+};
+
+/* ---------- Ruteo por rol ---------- */
+async function routeByRole() {
+  const user = getModel();
+  if (!user) return show('screen-login');
+  if (!user.terminos_aceptados) return show('screen-terms');
+  if (user.rol === 'master') return initMaster();
+  return initCliente();
+}
+
+/* ---------- Términos ---------- */
+$('#btn-accept-terms').onclick = async () => {
+  try {
+    const user = getModel();
+    await pb.collection('users').update(user.id, { terminos_aceptados: true });
+    await pb.collection('users').authRefresh();
+    routeByRole();
+  } catch (e) { toast('Error al guardar', true); }
+};
+
+/* ---------- Logout ---------- */
+async function logout() {
+  try {
+    const user = getModel();
+    if (user) {
+      await pb.collection('conexiones').create({
+        user: user.id, evento: 'logout', timestamp: new Date().toISOString()
+      });
+    }
+  } catch {}
+  pb.authStore.clear();
+  show('screen-login');
+}
+
+/* ---------- Registro de conexión ---------- */
+async function registrarConexion() {
+  try {
+    const user = getModel();
+    if (!user) return;
+    await pb.collection('conexiones').create({
+      user: user.id,
+      evento: 'login',
+      user_agent: navigator.userAgent,
+      timestamp: new Date().toISOString(),
+      activo: true,
+    });
+  } catch (e) { console.warn('No se pudo registrar conexión', e); }
+}
+
+/* ============================================================
+   GALERÍA (pública para cliente)
+   ============================================================ */
+async function cargarGaleria() {
+  const cont = $('#gallery');
+  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando galería...</div>';
+  try {
+    const list = await pb.collection('galeria').getFullList({ sort: '-created', requestKey: null });
+    if (!list.length) { cont.innerHTML = '<div class="empty">Aún no hay contenido publicado.</div>'; return; }
+    cont.innerHTML = list.map(item => {
+      const url = pb.files.getURL(item, item.archivo);
+      const esVideo = /\.(mp4|webm|mov)$/i.test(item.archivo || '');
+      const media = esVideo
+        ? `<video src="${url}" controls playsinline preload="metadata"></video>`
+        : `<img src="${url}" alt="${item.descripcion || ''}" loading="lazy" />`;
+      return `<div class="media-card">${media}<div class="desc">${item.descripcion || ''}</div></div>`;
+    }).join('');
+  } catch (e) {
+    console.error(e);
+    cont.innerHTML = '<div class="empty">No se pudo cargar la galería.</div>';
+  }
+}
+
+/* ============================================================
+   CLIENTE
+   ============================================================ */
+let clienteTab = 'home';
+
+function initCliente() {
+  const user = getModel();
+  $('#client-user').textContent = user.name || user.email;
+  show('screen-client');
+  clienteTab = 'home';
+  cargarGaleria();
+  pintarNavCliente();
+  cargarPerfilCliente();
+}
+
+function pintarNavCliente() {
+  $$('#screen-client .bottom-nav button').forEach(b => {
+    b.onclick = () => {
+      const tab = b.dataset.tab;
+      if (tab === 'logout') return logout();
+      clienteTab = tab;
+      $$('#screen-client .bottom-nav button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      renderClienteTab();
+    };
+  });
+}
+
+async function cargarPerfilCliente() {
+  try {
+    const user = getModel();
+    const perfil = await pb.collection('perfiles')
+      .getFirstListItem(`user="${user.id}"`, { requestKey: null })
+      .catch(() => null);
+    window.__perfil = perfil;
+  } catch {}
+}
+
+function renderClienteTab() {
+  if (clienteTab === 'home') {
+    $('#gallery').style.display = '';
+    show('screen-client');
+    cargarGaleria();
+  } else if (clienteTab === 'solicitar') {
+    renderFormSolicitud();
+  } else if (clienteTab === 'historial') {
+    renderHistorialCliente();
+  } else if (clienteTab === 'chat') {
+    renderChatCliente();
+  }
+}
+
+/* ---------- Formulario de solicitud ---------- */
+function renderFormSolicitud() {
+  const perfil = window.__perfil;
+  if (perfil) {
+    openModal(`
+      <h3>Solicitar cilindro</h3>
+      <p class="muted" style="margin:8px 0 14px;">Hola ${perfil.nombre} ${perfil.apellido}, ¿qué cilindro necesitas hoy?</p>
+      <label>Cilindro</label>
+      <select id="sol-cilindro-simple">
+        ${CFG.CILINDROS.map(c => `<option value="${c.id}">${c.label}</option>`).join('')}
+      </select>
+      <button id="btn-sol-simple" class="success">Confirmar pedido</button>
+      <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cancelar</button>
+    `);
+    $('#btn-sol-simple').onclick = () => crearPedido(perfil, $('#sol-cilindro-simple').value);
+    return;
+  }
+
+  openModal(`
+    <h3>Datos de la solicitud</h3>
+    <label>Municipio</label>
+    <input value="${CFG.MUNICIPIO_DEFAULT}" disabled />
+    <label>Sector (escrito)</label>
+    <input id="sol-sector" placeholder="Ej: Guarenas Centro" />
+    <label>Sector por GPS</label>
+    <button class="secondary" id="btn-gps">📍 Obtener ubicación actual</button>
+    <p class="muted" id="gps-info"></p>
+    <label>Nombre</label>
+    <input id="sol-nombre" placeholder="Tu nombre" />
+    <label>Apellido</label>
+    <input id="sol-apellido" placeholder="Tu apellido" />
+    <label>Cédula</label>
+    <input id="sol-cedula" placeholder="V-12345678" />
+    <label>Número de teléfono</label>
+    <input id="sol-telefono" placeholder="0414-0000000" />
+    <label>Cilindro solicitado</label>
+    <select id="sol-cilindro">
+      ${CFG.CILINDROS.map(c => `<option value="${c.id}">${c.label}</option>`).join('')}
+    </select>
+    <button id="btn-sol-full" class="success">Enviar solicitud</button>
+    <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cancelar</button>
+  `);
+
+  let gps = null;
+  $('#btn-gps').onclick = () => {
+    if (!navigator.geolocation) return toast('GPS no disponible', true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        gps = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        $('#gps-info').textContent = `✅ Ubicación capturada: ${gps.lat.toFixed(5)}, ${gps.lng.toFixed(5)}`;
+      },
+      () => toast('No se pudo obtener la ubicación', true),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  $('#btn-sol-full').onclick = async () => {
+    const data = {
+      sector: $('#sol-sector').value.trim(),
+      nombre: $('#sol-nombre').value.trim(),
+      apellido: $('#sol-apellido').value.trim(),
+      cedula: $('#sol-cedula').value.trim(),
+      telefono: $('#sol-telefono').value.trim(),
+      gps_lat: gps?.lat || null,
+      gps_lng: gps?.lng || null,
+    };
+    if (!data.sector || !data.nombre || !data.apellido || !data.cedula || !data.telefono)
+      return toast('Completa todos los campos', true);
+    const user = getModel();
+    try {
+      const perfil = await pb.collection('perfiles').create({
+        user: user.id,
+        ...data,
+        municipio: CFG.MUNICIPIO_DEFAULT,
+      });
+      window.__perfil = perfil;
+      crearPedido(perfil, $('#sol-cilindro').value);
+    } catch (e) {
+      console.error(e);
+      toast('Error al guardar perfil', true);
+    }
+  };
+}
+
+/* ---------- Crear pedido ---------- */
+async function crearPedido(perfil, cilindro) {
+  try {
+    const user = getModel();
+    await pb.collection('pedidos').create({
+      user: user.id,
+      perfil: perfil.id,
+      comunidad: perfil.sector,
+      nombre: perfil.nombre,
+      apellido: perfil.apellido,
+      cedula: perfil.cedula,
+      telefono: perfil.telefono,
+      gps_lat: perfil.gps_lat,
+      gps_lng: perfil.gps_lng,
+      cilindro,
+      estado: 'pendiente',
+      fecha: new Date().toISOString(),
+      dia: todayKey(),
+      mes: monthKey(),
+    });
+    toast('✅ Pedido registrado');
+    closeModal();
+  } catch (e) {
+    console.error(e);
+    toast('Error al registrar pedido', true);
+  }
+}
+
+/* ---------- Historial cliente ---------- */
+async function renderHistorialCliente() {
+  openModal(`
+    <h3>Historial de pedidos</h3>
+    <p class="muted">Mostrando los últimos 3 meses.</p>
+    <div id="hist-list"><div class="empty"><span class="spin"></span> Cargando...</div></div>
+    <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cerrar</button>
+  `);
+  const limite = new Date(); limite.setMonth(limite.getMonth() - CFG.HISTORIAL_MESES);
+  try {
+    const user = getModel();
+    const list = await pb.collection('pedidos').getFullList({
+      filter: `user="${user.id}" && fecha >= "${limite.toISOString()}"`,
+      sort: '-fecha', requestKey: null,
+    });
+    if (!list.length) { $('#hist-list').innerHTML = '<div class="empty">No tienes pedidos aún.</div>'; return; }
+    $('#hist-list').innerHTML = list.map(p => `
+      <div class="card" style="margin:8px 0; padding:12px;">
+        <div style="display:flex; justify-content:space-between;">
+          <b>${p.cilindro === '10kg' ? 'Cilindro 10 kg' : 'Cilindro 18 kg'}</b>
+          <span class="pill ${p.estado === 'entregado' ? 'on' : ''}">${p.estado}</span>
+        </div>
+        <div class="muted" style="margin-top:4px;">${fmtDate(p.fecha)} · ${p.comunidad}</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.error(e);
+    $('#hist-list').innerHTML = '<div class="empty">Error al cargar historial.</div>';
+  }
+}
+
+/* ---------- Chat cliente ---------- */
+let chatInterval = null;
+function renderChatCliente() {
+  openModal(`
+    <h3>Chat con soporte</h3>
+    <div class="chat-box" id="chat-box"></div>
+    <textarea id="chat-input" rows="2" placeholder="Escribe tu mensaje..."></textarea>
+    <button id="chat-send">Enviar</button>
+    <button class="ghost" id="chat-close">Cerrar</button>
+  `);
+  const cargar = async () => {
+    try {
+      const user = getModel();
+      const list = await pb.collection('mensajes').getFullList({
+        filter: `user="${user.id}"`,
+        sort: 'created', requestKey: null,
+      });
+      const box = $('#chat-box');
+      if (!box) return;
+      box.innerHTML = list.map(m => `
+        <div class="msg ${m.de_master ? 'other' : 'me'}">
+          ${m.texto}
+          <small>${fmtDate(m.created)}</small>
+        </div>
+      `).join('');
+      box.scrollTop = box.scrollHeight;
+    } catch {}
+  };
+  cargar();
+  chatInterval = setInterval(cargar, CFG.CHAT_POLL_MS);
+
+  $('#chat-send').onclick = async () => {
+    const texto = $('#chat-input').value.trim();
+    if (!texto) return;
+    try {
+      const user = getModel();
+      await pb.collection('mensajes').create({
+        user: user.id,
+        texto,
+        de_master: false,
+      });
+      $('#chat-input').value = '';
+      cargar();
+    } catch { toast('Error al enviar', true); }
+  };
+  $('#chat-close').onclick = () => { clearInterval(chatInterval); closeModal(); };
+}
+
+/* ============================================================
+   MASTER
+   ============================================================ */
+let masterTab = 'pedidos';
+let masterInterval = null;
+
+function initMaster() {
+  const user = getModel();
+  $('#master-user').textContent = user.name || user.email;
+  show('screen-master');
+  masterTab = 'pedidos';
+  $$('#screen-master .bottom-nav button').forEach(b => {
+    b.onclick = () => {
+      const tab = b.dataset.mtab;
+      if (tab === 'logout') return logout();
+      masterTab = tab;
+      $$('#screen-master .bottom-nav button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      renderMasterTab();
+    };
+  });
+  renderMasterTab();
+}
+
+function renderMasterTab() {
+  if (masterInterval) clearInterval(masterInterval);
+  if (masterTab === 'pedidos')    renderPedidosHoy();
+  if (masterTab === 'mensual')    renderReporteMensual();
+  if (masterTab === 'emergencia') renderConfigEmergencia();
+  if (masterTab === 'activos')    renderUsuariosActivos();
+  if (masterTab === 'chat')       renderChatMaster();
+}
+
+/* ---------- Pedidos del día ---------- */
+async function renderPedidosHoy() {
+  const cont = $('#master-content');
+  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando pedidos de hoy...</div>';
+  try {
+    const list = await pb.collection('pedidos').getFullList({
+      filter: `dia="${todayKey()}"`,
+      sort: '-created', requestKey: null,
+    });
+    const grupos = {};
+    list.forEach(p => {
+      const key = p.comunidad || 'Sin sector';
+      if (!grupos[key]) grupos[key] = { personas: 0, c10: 0, c18: 0, ids: new Set() };
+      grupos[key].ids.add(p.user);
+      if (p.cilindro === '10kg') grupos[key].c10++; else grupos[key].c18++;
+    });
+
+    if (!list.length) {
+      cont.innerHTML = '<div class="card"><div class="empty">No hay pedidos registrados hoy.</div></div>';
+      return;
+    }
+
+    cont.innerHTML = `
+      <div class="card">
+        <h3>Pedidos de hoy · ${todayKey()}</h3>
+        <p class="muted">Reinicia automáticamente cada día.</p>
+      </div>
+      ${Object.entries(grupos).map(([comunidad, g]) => `
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3>📍 ${comunidad}</h3>
+            <button class="danger" style="width:auto; padding:8px 12px; margin:0;" data-emg="${comunidad}">🚨 Emergencia</button>
+          </div>
+          <p style="margin-top:8px;">👥 Personas: <b>${g.ids.size}</b></p>
+          <p>🛢️ Cilindros 10 kg: <b>${g.c10}</b> · 18 kg: <b>${g.c18}</b></p>
+          <p class="muted" style="margin-top:6px;">Total: ${g.c10 + g.c18} cilindros</p>
+        </div>
+      `).join('')}
+    `;
+    $$('button[data-emg]').forEach(b => b.onclick = () => emergenciaComunidad(b.dataset.emg));
+  } catch (e) {
+    console.error(e);
+    cont.innerHTML = '<div class="empty">Error al cargar pedidos.</div>';
+  }
+  masterInterval = setInterval(renderPedidosHoy, 60000);
+}
+
+/* ---------- Emergencia ---------- */
+async function emergenciaComunidad(comunidad) {
+  try {
+    const contactos = await pb.collection('emergencia').getFullList({ requestKey: null });
+    if (!contactos.length) {
+      openModal(`<h3>🚨 Emergencia</h3><p class="muted">No hay contactos configurados. Ve a "Configurar emergencia".</p>
+        <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cerrar</button>`);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = pos.coords.latitude, lng = pos.coords.longitude;
+      const mensaje = `🚨 EMERGENCIA en ${comunidad}. Necesitamos apoyo inmediato.`;
+      openModal(`
+        <h3>🚨 Emergencia · ${comunidad}</h3>
+        <p class="muted">Selecciona a quién reportar:</p>
+        ${contactos.map(c => `<button class="danger" data-tel="${c.telefono}">${c.nombre} · ${c.telefono}</button>`).join('')}
+        <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cancelar</button>
+      `);
+      $$('#modal-content button[data-tel]').forEach(b => b.onclick = () => {
+        const tel = b.dataset.tel.replace(/\D/g, '');
+        const texto = encodeURIComponent(`${mensaje}\nUbicación: https://maps.google.com/?q=${lat},${lng}`);
+        window.open(`https://wa.me/${tel}?text=${texto}`, '_blank');
+        closeModal();
+      });
+    }, () => {
+      toast('No se pudo obtener GPS', true);
+    }, { enableHighAccuracy: true, timeout: 8000 });
+  } catch (e) { toast('Error', true); }
+}
+
+/* ---------- Reporte mensual ---------- */
+async function renderReporteMensual() {
+  const cont = $('#master-content');
+  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando reporte mensual...</div>';
+  try {
+    const list = await pb.collection('pedidos').getFullList({
+      filter: `mes="${monthKey()}"`, requestKey: null,
+    });
+    const grupos = {};
+    list.forEach(p => {
+      const k = p.comunidad || 'Sin sector';
+      if (!grupos[k]) grupos[k] = { personas: new Set(), sol10: 0, sol18: 0, ent10: 0, ent18: 0 };
+      grupos[k].personas.add(p.user);
+      if (p.cilindro === '10kg') { grupos[k].sol10++; if (p.estado === 'entregado') grupos[k].ent10++; }
+      else { grupos[k].sol18++; if (p.estado === 'entregado') grupos[k].ent18++; }
+    });
+
+    cont.innerHTML = `
+      <div class="card">
+        <h3>📊 Reporte mensual · ${monthKey()}</h3>
+        <p class="muted">Se reinicia automáticamente cada mes.</p>
+        <div class="row" style="margin-top:10px;">
+          <button class="secondary" id="btn-imprimir">🖨️ Imprimir</button>
+          <button class="success" id="btn-excel">📥 Exportar Excel</button>
+        </div>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Comunidad</th><th>👥</th><th>10kg</th><th>18kg</th><th>Entr.</th></tr></thead>
+          <tbody>
+            ${Object.entries(grupos).map(([k,g]) => `
+              <tr>
+                <td>${k}</td>
+                <td>${g.personas.size}</td>
+                <td>${g.sol10}</td>
+                <td>${g.sol18}</td>
+                <td>${g.ent10 + g.ent18}</td>
+              </tr>
+            `).join('') || '<tr><td colspan="5" class="empty">Sin datos</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    `;
+    $('#btn-imprimir').onclick = () => window.print();
+    $('#btn-excel').onclick = () => exportarExcel(grupos);
+  } catch (e) {
+    console.error(e);
+    cont.innerHTML = '<div class="empty">Error al cargar reporte.</div>';
+  }
+}
+
+function exportarExcel(grupos) {
+  let csv = 'Comunidad,Personas,Cilindros 10kg,Cilindros 18kg,Entregados\n';
+  Object.entries(grupos).forEach(([k,g]) => {
+    csv += `"${k}",${g.personas.size},${g.sol10},${g.sol18},${g.ent10 + g.ent18}\n`;
+  });
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `GasGuarenas_${monthKey()}.csv`;
+  a.click();
+}
+
+/* ---------- Configurar emergencia ---------- */
+async function renderConfigEmergencia() {
+  const cont = $('#master-content');
+  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando contactos...</div>';
+  try {
+    const list = await pb.collection('emergencia').getFullList({ sort: 'created', requestKey: null });
+    cont.innerHTML = `
+      <div class="card">
+        <h3>🚨 Contactos de emergencia</h3>
+        <p class="muted">Hasta 4 números de WhatsApp.</p>
+        <div id="emg-list">
+          ${list.map(c => `
+            <div class="card" style="padding:10px; margin:8px 0;">
+              <b>${c.nombre}</b> · ${c.telefono}
+              <button class="danger" style="width:auto; padding:6px 10px; margin-top:6px;" data-del="${c.id}">Eliminar</button>
+            </div>
+          `).join('') || '<div class="empty">Sin contactos</div>'}
+        </div>
+      </div>
+      <div class="card">
+        <h3>Agregar contacto</h3>
+        <label>Nombre (PC, Bomberos, Policía, Ven911...)</label>
+        <input id="emg-nombre" placeholder="Ej: Bomberos" />
+        <label>Número WhatsApp (con código país, ej: 584140000000)</label>
+        <input id="emg-tel" placeholder="584140000000" />
+        <button class="success" id="emg-add">Guardar contacto</button>
+      </div>
+    `;
+    $$('button[data-del]').forEach(b => b.onclick = async () => {
+      if (!confirm('¿Eliminar?')) return;
+      await pb.collection('emergencia').delete(b.dataset.del);
+      renderConfigEmergencia();
+    });
+    $('#emg-add').onclick = async () => {
+      if (list.length >= 4) return toast('Máximo 4 contactos', true);
+      const nombre = $('#emg-nombre').value.trim();
+      const telefono = $('#emg-tel').value.trim();
+      if (!nombre || !telefono) return toast('Completa los campos', true);
+      try {
+        await pb.collection('emergencia').create({ nombre, telefono });
+        toast('Contacto guardado');
+        renderConfigEmergencia();
+      } catch (e) { toast('Error al guardar', true); }
+    };
+  } catch (e) {
+    console.error(e);
+    cont.innerHTML = '<div class="empty">Error al cargar contactos.</div>';
+  }
+}
+
+/* ---------- Usuarios activos ---------- */
+async function renderUsuariosActivos() {
+  const cont = $('#master-content');
+  const cargar = async () => {
+    try {
+      const desde = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+      const list = await pb.collection('conexiones').getFullList({
+        filter: `timestamp >= "${desde}" && evento="login"`,
+        sort: '-timestamp', requestKey: null, expand: 'user',
+      });
+      const unicos = {};
+      list.forEach(c => {
+        if (c.expand?.user) unicos[c.user] = c;
+      });
+      cont.innerHTML = `
+        <div class="card">
+          <h3>🟢 Usuarios activos</h3>
+          <p class="muted">Últimos 15 minutos.</p>
+        </div>
+        <div class="card">
+          ${Object.values(unicos).length ? Object.values(unicos).map(c => `
+            <div style="padding:8px 0; border-bottom:1px solid rgba(77,171,247,.15);">
+              <b>${c.expand.user.name || c.expand.user.email}</b>
+              <span class="pill on">activo</span>
+              <div class="muted">${fmtDate(c.timestamp)}</div>
+            </div>
+          `).join('') : '<div class="empty">Nadie conectado.</div>'}
+        </div>
+      `;
+    } catch (e) {
+      console.error(e);
+      cont.innerHTML = '<div class="empty">Error al cargar conexiones.</div>';
+    }
+  };
+  cargar();
+  masterInterval = setInterval(cargar, CFG.USUARIOS_ACTIVOS_POLL_MS);
+}
+
+/* ---------- Chat Master ---------- */
+async function renderChatMaster() {
+  const cont = $('#master-content');
+  cont.innerHTML = '<div class="empty"><span class="spin"></span> Cargando conversaciones...</div>';
+  try {
+    const msgs = await pb.collection('mensajes').getFullList({ sort: '-created', requestKey: null, expand: 'user' });
+    const convs = {};
+    msgs.forEach(m => {
+      if (!convs[m.user]) convs[m.user] = { user: m.expand?.user, ultimo: m };
+    });
+    cont.innerHTML = `
+      <div class="card"><h3>💬 Conversaciones</h3></div>
+      ${Object.values(convs).length ? Object.values(convs).map(c => `
+        <div class="card" style="cursor:pointer;" data-chat="${c.user?.id}">
+          <b>${c.user?.email || 'Cliente'}</b>
+          <div class="muted">${c.last?.texto ? '' : ''}${(c.ultimo.texto || '').slice(0,60)}</div>
+          <div class="muted">${fmtDate(c.ultimo.created)}</div>
+        </div>
+      `).join('') : '<div class="card"><div class="empty">Sin mensajes.</div></div>'}
+    `;
+    $$('[data-chat]').forEach(el => el.onclick = () => abrirChatMaster(el.dataset.chat));
+  } catch (e) {
+    console.error(e);
+    cont.innerHTML = '<div class="empty">Error.</div>';
+  }
+}
+
+async function abrirChatMaster(userId) {
+  openModal(`
+    <h3>Chat con cliente</h3>
+    <div class="chat-box" id="chat-box-m"></div>
+    <textarea id="chat-in-m" rows="2" placeholder="Responder..."></textarea>
+    <button id="chat-send-m">Enviar</button>
+    <button class="ghost" onclick="document.getElementById('modal').classList.remove('active')">Cerrar</button>
+  `);
+  const cargar = async () => {
+    const list = await pb.collection('mensajes').getFullList({
+      filter: `user="${userId}"`, sort: 'created', requestKey: null,
+    });
+    const box = $('#chat-box-m');
+    if (!box) return;
+    box.innerHTML = list.map(m => `
+      <div class="msg ${m.de_master ? 'me' : 'other'}">
+        ${m.texto}
+        <small>${fmtDate(m.created)}</small>
+      </div>
+    `).join('');
+    box.scrollTop = box.scrollHeight;
+  };
+  cargar();
+  const iv = setInterval(cargar, CFG.CHAT_POLL_MS);
+  $('#chat-send-m').onclick = async () => {
+    const texto = $('#chat-in-m').value.trim();
+    if (!texto) return;
+    await pb.collection('mensajes').create({ user: userId, texto, de_master: true });
+    $('#chat-in-m').value = '';
+    cargar();
+  };
+  $('#modal').addEventListener('click', function h(e) {
+    if (e.target.id === 'modal') { clearInterval(iv); $('#modal').removeEventListener('click', h); }
+  });
+}
+
+/* ============================================================
+   ARRANQUE
+   ============================================================ */
+window.addEventListener('load', () => {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+  if (pb.authStore.isValid) routeByRole();
+  else show('screen-login');
+});
+
+// Refrescar token cada 10 min
+setInterval(() => {
+  if (pb.authStore.isValid) pb.collection('users').authRefresh().catch(() => {});
+}, 10 * 60 * 1000);
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 // frontend/config.js
-// Configuración global de GasGuarenas
+// Configuración global de GasGuarenas - v2.0
 
 window.GAS_CONFIG = {
   // URL de PocketBase en Railway
@@ -7,7 +7,7 @@ window.GAS_CONFIG = {
 
   // Nombre de la app
   APP_NAME: "GasGuarenas",
-  APP_VERSION: "1.0.0",
+  APP_VERSION: "2.0.0",
 
   // Municipio por defecto
   MUNICIPIO_DEFAULT: "Municipio Plaza",
@@ -19,6 +19,14 @@ window.GAS_CONFIG = {
   CILINDROS: [
     { id: "10kg", label: "Cilindro 10 kg" },
     { id: "18kg", label: "Cilindro 18 kg" },
+    { id: "43kg", label: "Cilindro 43 kg" },
+  ],
+
+  // Estados del cilindro
+  ESTADOS_CILINDRO: [
+    { id: "buen_estado", label: "Buen estado" },
+    { id: "mal_estado",  label: "Mal estado" },
+    { id: "PA",          label: "PA" },
   ],
 
   // Colores (paleta azul)
@@ -41,4 +49,4 @@ window.GAS_CONFIG = {
   USUARIOS_ACTIVOS_POLL_MS: 10000,
 };
 
-console.log("✅ config.js cargado:", window.GAS_CONFIG.APP_NAME);
+console.log("✅ config.js cargado:", window.GAS_CONFIG.APP_NAME, "v" + window.GAS_CONFIG.APP_VERSION);

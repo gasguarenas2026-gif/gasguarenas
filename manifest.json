@@ -1,5 +1,5 @@
 {
-  "name": "GasGuarenas - Distribución de Gas Doméstico",
+  "name": "Gas Guarenas Comunal",
   "short_name": "GasGuarenas",
   "description": "Solicita tu cilindro de gas doméstico en el Municipio Plaza de forma rápida y segura.",
   "start_url": "./index.html",
@@ -12,30 +12,30 @@
   "categories": ["utilities", "lifestyle"],
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2933/2933933.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2933/2933933.png",
+      "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "shortcuts": [
     {
-      "name": "Solicitar Cilindro",
-      "short_name": "Solicitar",
-      "url": "./index.html?action=solicitar",
-      "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/2933/2933933.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Historial",
-      "short_name": "Historial",
-      "url": "./index.html?action=historial",
-      "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/2933/2933933.png", "sizes": "192x192" }]
+      "name": "Beneficiarios",
+      "short_name": "Beneficiarios",
+      "url": "./index.html?action=beneficiarios",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
